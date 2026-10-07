@@ -1,0 +1,1756 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The chain rule</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=Source+Sans+3:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+:root{--bg:#F5F2EA;--surface:#FFFDF7;--ink:#1C1A16;--muted:#5A5549;--line:#DAD3C3;--soft:#ECE7DA;--inside:#1E58A3;--inside-tint:#E1EAF6;--outside:#A1430C;--outside-tint:#F6E5D6;--ok:#2B6838;--ok-tint:#E2F0E3;--k-tint:#EEDFB8;--k-line:#B8964A;--bad:#A3271B;--bad-tint:#F8E2DE;--focus:#1E58A3;--serif:'Newsreader','Iowan Old Style',Georgia,serif;--sans:'Source Sans 3','Segoe UI',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;}
+@media (prefers-color-scheme: dark){:root{--bg:#15140F;--surface:#1E1C18;--ink:#EDE8DC;--muted:#B3AC9D;--line:#3B372F;--soft:#27241E;--inside:#91B9F2;--inside-tint:#1B2840;--outside:#F2A56F;--outside-tint:#3A2617;--ok:#91CC9D;--ok-tint:#1C3020;--k-tint:#3B321C;--k-line:#9C8146;--bad:#F2958A;--bad-tint:#3D1C18;--focus:#91B9F2;}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:21px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--inside);text-underline-offset:3px}a:hover{color:var(--ink)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:4px}
+.page{padding:0 24px 160px}
+.col{max-width:760px;margin-left:auto;margin-right:auto}
+p{margin:0 0 16px;text-wrap:pretty}
+h1,h2,h3{font-family:var(--serif);font-weight:500;letter-spacing:-0.01em;margin:0}
+.cap{font-family:var(--sans);font-size:14px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.muted{color:var(--muted)}
+/* math typesetting: always inline flow, never flex items */
+.mn,.mv,.mf,.mo,.ms{font-family:var(--serif)}
+.mv{font-style:italic;padding-right:.05em}
+.mo{white-space:nowrap}
+.mo.eq{white-space:normal}
+.ms{font-size:.7em;line-height:1;vertical-align:.65em}
+.ms.msv{font-style:italic}
+.em{font-style:italic}
+.in{color:var(--inside)}
+.mn.in,.mv.in,.mf.in,.mo.in{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px;text-decoration-skip-ink:none}
+.pr.in,.pr.out{font-weight:600}
+.out{color:var(--outside)}
+.k{color:var(--ink) !important;background:var(--k-tint);box-shadow:inset 0 -1.5px 0 var(--k-line);border-radius:4px;padding:0 .14em;margin:0 .02em;font-weight:500;text-decoration:none !important}
+sup.k{padding:0 .1em}
+/* bar */
+.bar{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin:0 -24px;padding:0 24px}
+.bar-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:20px;min-height:60px;position:relative}
+.brand{font-family:var(--serif);font-size:20px;font-weight:600;color:var(--ink);text-decoration:none}
+.toc{display:flex;gap:20px;flex:1;justify-content:center;font-family:var(--sans);font-size:16px}
+.toc a{color:var(--muted);text-decoration:none;padding:6px 0}
+.toc a:hover{color:var(--ink)}
+.rulesbtn{margin-left:auto;font-family:var(--sans);font-size:16px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;min-height:42px;padding:6px 18px;cursor:pointer;display:flex;gap:8px;align-items:center;position:relative;z-index:22}
+.rulesbtn .n{color:var(--muted);font-weight:500}
+.scrim{position:fixed;inset:0;z-index:21;background:transparent;border:0;padding:0;margin:0;cursor:default}
+.drawer{position:absolute;right:0;top:calc(100% + 8px);z-index:23;width:min(460px,calc(100vw - 32px));max-height:72vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 22px;box-shadow:0 18px 50px rgba(20,18,12,.18)}
+.rules{list-style:none;margin:0;padding:0}
+.rules li{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:baseline}
+.rules li:first-child{border-top:0}
+.rname{font-family:var(--sans);font-size:16px;color:var(--muted)}
+.rules li.new .rname{color:var(--ink);font-weight:600}
+.rf{font-size:22px}
+.newtag{grid-column:2;font-family:var(--sans);font-size:14px;color:var(--muted)}
+/* hero */
+.hero{padding:88px 0 24px}
+.kicker{font-family:var(--sans);font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.hero h1{font-size:clamp(48px,8vw,84px);line-height:1;font-weight:500;margin-bottom:18px}
+.dek{font-size:24px;line-height:1.5;color:var(--muted)}
+.emblem{margin:52px 0 0;padding:44px 20px 32px;background:var(--surface);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;align-items:center;gap:26px}
+.emb-row{font-family:var(--serif);font-size:clamp(56px,11vw,108px);line-height:1.1;display:flex;align-items:flex-start}
+.emb-out{color:var(--outside)}
+.emb-in{color:var(--inside);background:var(--inside-tint);border-radius:12px;padding:0 .14em;border-bottom:4px solid var(--inside);animation:breathe 4.5s ease-in-out infinite}
+.emb-sup{font-size:.55em;color:var(--outside);margin-left:.04em}
+.emb-legend{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:center;font-family:var(--sans);font-size:17px}
+.leg{display:flex;align-items:center;gap:10px}
+.sw{width:30px;height:18px;border-radius:5px;flex:none}
+.sw-in{background:var(--inside-tint);border-bottom:3px solid var(--inside)}
+.sw-out{border:2px solid var(--outside)}
+.leg b{font-weight:600}
+.leg-in b{color:var(--inside)}.leg-out b{color:var(--outside)}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(30,88,163,0)}50%{box-shadow:0 0 0 8px rgba(30,88,163,.10)}}
+/* sections */
+.sec{padding-top:160px;margin-bottom:12px}
+.sec-top{display:flex;align-items:baseline;gap:18px;border-top:2px solid var(--ink);padding-top:18px}
+.sec-n{font-family:var(--serif);font-size:60px;line-height:.9;color:var(--outside);font-weight:400}
+.sec h2{font-size:clamp(34px,5vw,48px);line-height:1.1}
+.lede{margin-top:12px;font-size:21px;color:var(--muted)}
+.prose{margin-top:68px}
+.prose h3{font-size:28px;margin-bottom:12px}
+/* buttons */
+.btn{font-family:var(--sans);font-size:17px;font-weight:600;min-height:48px;padding:10px 20px;border-radius:10px;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer;white-space:nowrap}
+.btn:hover{opacity:.9}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.sm{min-height:44px;padding:8px 16px;font-size:16px}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.link{font-family:var(--sans);font-size:16px;font-weight:600;background:none;border:0;color:var(--inside);text-decoration:underline;text-underline-offset:3px;min-height:44px;padding:0 4px;cursor:pointer}
+/* cards */
+.prob,.scard,.exam{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:36px 36px 30px;margin:44px auto 0;max-width:760px}
+.prob-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-bottom:18px}
+.plabel{font-family:var(--sans);font-weight:700;font-size:16px;color:var(--muted)}
+.ptask{font-family:var(--sans);font-size:17px;color:var(--muted)}
+.pmath{font-size:29px;line-height:1.35}
+.is-done .plabel::after{content:' \2713';color:var(--ok)}
+.locked{font-family:var(--sans);font-size:16px;color:var(--muted);margin:0}
+.is-locked{background:transparent;border-style:dashed}
+.ansrow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.lhs{font-size:24px;white-space:nowrap}
+.minput{flex:1 1 200px;min-width:0;font-family:var(--mono);font-size:19px;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;min-height:54px;padding:10px 14px;width:100%}
+.minput:focus{border-color:var(--inside);outline:none;box-shadow:0 0 0 3px var(--inside-tint)}
+.pal{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;margin-top:10px}
+.key{font-family:var(--serif);font-size:19px;min-height:46px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;padding:0 4px}
+.key:hover{border-color:var(--ink)}
+.fb{font-family:var(--sans);font-size:17px;line-height:1.55;margin-top:10px}
+.fb .mn,.fb .mv,.fb .mf,.fb .mo{font-size:20px}
+.pv{font-family:var(--sans);font-size:16px;color:var(--muted);margin-top:6px}
+.pv .mn,.pv .mv,.pv .mf,.pv .mo{font-size:19px}
+.fb-ok{color:var(--ok);font-weight:600}
+.fb-no::before,.fb-err::before,.fb-stuck::before{content:'';display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--outside);margin-right:9px;vertical-align:2px}
+.fb-err::before{background:var(--muted)}
+.fb-stuck::before{background:var(--inside)}
+.aft{display:flex;gap:10px;flex-wrap:wrap}
+.sol{margin-top:12px;padding:16px 18px;background:var(--soft);border-radius:10px;font-size:20px}
+.repair{margin-top:18px;padding:20px;background:var(--soft);border-radius:12px}
+.repair .diag{font-size:19px}
+.cap2{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--muted);margin:18px 0 6px}
+.repair .pmath{font-size:24px}
+.hintd{margin:0 0 16px;font-family:var(--sans);font-size:17px}
+.hintd summary{font-weight:600;color:var(--inside);cursor:pointer;min-height:40px;display:flex;align-items:center}
+.hintd p{margin:6px 0 4px;font-size:17px}
+.hintd .mn,.hintd .mv,.hintd .mf,.hintd .mo{font-size:20px}
+/* step rows */
+.ctitle{font-family:var(--sans);font-size:19px;margin:0 0 18px}
+.ctitle .mn,.ctitle .mv,.ctitle .mf,.ctitle .mo{font-size:27px}
+.ctitle .ms{font-size:19px}
+.srows{display:flex;flex-direction:column}
+.srow{display:grid;grid-template-columns:28px minmax(0,10em) minmax(0,1fr);gap:8px 18px;align-items:start;padding:20px 0;border-top:1px solid var(--line)}
+.srow.fixrow{grid-template-columns:28px minmax(0,9em) minmax(0,1fr) 120px}
+.snum{font-family:var(--sans);font-weight:700;font-size:16px;color:var(--muted);padding-top:15px}
+.slabel{font-family:var(--sans);font-size:18px;line-height:1.35;padding-top:13px}
+.slabel .mn,.slabel .mv,.slabel .mf,.slabel .mo{font-size:21px}
+.sval{min-width:0}
+.vrow{display:flex;align-items:flex-start;gap:10px}
+.vrow > .sbox,.vrow > .minput{flex:1 1 auto;min-width:0}
+.sbox{display:block;font-size:clamp(18px,2.9vw,24px);white-space:nowrap;overflow-x:auto;line-height:1.45;min-height:54px;padding:8px 16px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;width:100%;text-align:left;color:var(--ink)}
+.sbox.given{border-style:dashed}
+.sbox.good{border-color:var(--ok);background:var(--ok-tint)}
+.sbox.bad{border-color:var(--bad);background:var(--bad-tint)}
+.sbox.dim{opacity:.55}
+.gtag,.etag{display:inline-block;margin-top:6px;font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.bmark{width:22px;flex:none;color:var(--ok);font-weight:700;font-family:var(--sans);padding-top:14px}
+.srow.ok .minput{border-color:var(--ok)}
+.srow .fb{margin-top:8px}
+.rowacts{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.fixbtn{font-family:var(--sans);font-size:15px;font-weight:600;min-height:44px;width:100%;margin-top:5px;padding:6px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.fixbtn:hover{border-color:var(--ink)}
+.fixbtn:disabled{opacity:.35;cursor:not-allowed}
+.status{display:flex;align-items:flex-start;gap:12px;margin-top:20px;padding:16px 18px;border-radius:12px;font-family:var(--sans);font-size:17px;line-height:1.5}
+.status .mn,.status .mv,.status .mf,.status .mo{font-size:20px}
+.status .dot{flex:none;width:14px;height:14px;border-radius:50%;margin-top:5px}
+.st-bad{background:var(--bad-tint)}.st-bad .dot{background:var(--bad)}
+.st-ok{background:var(--ok-tint)}.st-ok .dot{background:var(--ok)}
+.note{margin-top:20px;padding-top:16px;border-top:1px solid var(--line);font-size:20px}
+/* machine */
+.machine{margin:44px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:40px 24px 32px;text-align:center}
+.mbig{font-size:clamp(36px,6vw,50px);line-height:1.3;margin:0 0 28px}
+.chain{display:flex;flex-direction:column;align-items:center;gap:8px;margin:0 auto 40px}
+.cline{white-space:nowrap;font-size:clamp(22px,4.4vw,32px);line-height:1.35;padding:6px 18px;border-radius:10px}
+.cline.last{background:var(--soft);font-weight:500}
+.carr{height:30px;display:flex;align-items:center;justify-content:center}
+.carr svg{display:block}
+.arrp{fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.cnote{font-family:var(--sans);font-size:15px;color:var(--muted);margin-left:10px}
+.pipe{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:nowrap}
+.pnode{display:flex;flex-direction:column;align-items:center;min-width:64px}
+.pk{font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.pv2{font-family:var(--serif);font-size:30px;font-variant-numeric:tabular-nums}
+.pin-n .pv2{color:var(--inside)}
+.pku{text-transform:none;font-family:var(--serif);font-style:italic;font-weight:500;font-size:16px;letter-spacing:0}
+.pbox{display:flex;flex-direction:column;align-items:center;padding:10px 16px;border-radius:12px;min-width:104px}
+.pbox .pf{font-size:26px}
+.pin{background:var(--inside-tint);border-bottom:3px solid var(--inside)}
+.pin .pk{color:var(--inside)}
+.pout{border:2px solid var(--outside)}
+.pout .pk{color:var(--outside)}
+.parr{flex:none;width:24px;height:2px;background:var(--muted);position:relative}
+.parr::after{content:'';position:absolute;right:-1px;top:-4px;border-left:8px solid var(--muted);border-top:5px solid transparent;border-bottom:5px solid transparent}
+.pick{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:0 0 26px;font-family:var(--sans);font-size:16px;color:var(--muted)}
+.chip-s{font-family:var(--serif);font-size:19px;min-width:48px;min-height:46px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.chip-s.on{background:var(--k-tint);color:var(--ink);border-color:var(--k-line);box-shadow:inset 0 -2px 0 var(--k-line);font-weight:600}
+.mu{margin:28px 0 0;padding-top:20px;border-top:1px solid var(--line);font-size:21px}
+/* highlighter */
+.hl{margin-top:36px;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.hl-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));border-bottom:1px solid var(--line)}
+.hl-tab{font-size:19px;min-height:56px;background:transparent;border:0;border-right:1px solid var(--line);color:var(--muted);cursor:pointer;padding:6px 8px;position:relative}
+.hl-tab:last-child{border-right:0}
+.hl-tab.cur{background:var(--bg);color:var(--ink)}
+.hl-tab.cur::after{content:'';position:absolute;left:12px;right:12px;bottom:0;height:3px;background:var(--ink)}
+.hl-tab.done{color:var(--ink)}
+.hl-tab.done::before{content:'\2713';position:absolute;top:3px;right:7px;font-family:var(--sans);font-size:11px;color:var(--ok)}
+.hl-stage{padding:34px 26px 32px;text-align:center}
+.hl-count{font-family:var(--sans);font-size:15px;color:var(--muted)}
+.hl-formula{font-size:clamp(40px,7vw,62px);line-height:1.3;margin:4px 0 18px}
+.hl-formula.solved .in{animation:lift .7s cubic-bezier(.2,.8,.2,1) both;background:var(--inside-tint);border-radius:4px}
+.hl-formula.solved .out{animation:fadein .7s .15s both}
+.hl-ask{font-size:21px}
+.chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:460px;margin:0 auto}
+.chip{font-size:26px;min-height:62px;padding:6px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;transition:border-color .15s,transform .15s}
+.chip:hover{border-color:var(--inside);transform:translateY(-1px)}
+.chip.wrong{border-color:var(--outside);border-style:dashed}
+.hl .fb{max-width:500px;margin:18px auto 0;text-align:left}
+.hl-out{max-width:500px;margin:0 auto;text-align:left}
+.hl-line{margin:0 0 8px;font-size:23px}
+.hl-note{font-size:19px;color:var(--muted);margin-top:10px}
+.hl-out .btn{margin-top:14px}
+.hl-done{margin-top:20px;font-size:20px}
+/* rule */
+.rule{margin:44px 0 0;padding:48px 32px 40px;background:var(--surface);border:2px solid var(--ink);border-radius:18px;text-align:center;position:relative}
+.rule-name{font-size:clamp(40px,6.5vw,56px);line-height:1.05;font-weight:500;margin:0 0 6px}
+.memo{display:flex;justify-content:center;margin:14px 0 16px}
+.memo span{position:relative;display:inline-block;font-family:var(--sans);font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--outside);background:var(--outside-tint);border:1.5px solid var(--outside);border-radius:999px;padding:5px 16px}
+.memo span::after{content:'';position:absolute;left:50%;bottom:-9px;margin-left:-8px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--outside)}
+.rule-eq{white-space:nowrap;overflow-x:auto;font-size:clamp(19px,4.4vw,42px);line-height:1.4;padding:22px 12px;background:var(--bg);border-radius:12px}
+.rule-words{margin:26px auto 0;max-width:30em;font-size:22px}
+.rule-u{margin:14px auto 0;max-width:32em;font-family:var(--sans);font-size:17px;color:var(--muted)}
+.rule-u .mn,.rule-u .mv,.rule-u .mf,.rule-u .mo{font-size:20px}
+/* why */
+.whyd{margin:44px auto 0;max-width:760px;border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:4px 24px}
+.whyd summary,.hintd summary{list-style:none}
+.whyd summary::-webkit-details-marker,.hintd summary::-webkit-details-marker{display:none}
+.whyd summary{font-family:var(--sans);font-size:18px;font-weight:600;cursor:pointer;min-height:58px;display:flex;align-items:center;gap:10px}
+.opt{font-weight:400;color:var(--muted)}
+.chev{margin-left:auto;width:12px;height:12px;border-right:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:translateY(-3px) rotate(45deg);transition:transform .2s;flex:none}
+details[open] > summary .chev{transform:translateY(3px) rotate(225deg)}
+.hintd summary{gap:10px}
+.hintd summary .chev{margin-left:0;width:9px;height:9px;border-width:2px}
+.whyd ul{margin:4px 0 18px;padding-left:1.2em;font-size:19px}
+.whyd li{margin-bottom:10px}
+/* forms */
+.forms{margin-top:28px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:8px 26px}
+.frow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1.3fr);gap:14px;align-items:baseline;padding:14px 0;border-top:1px solid var(--line);font-size:26px}
+.frow:first-child{border-top:0}
+.fl{text-align:right}
+.feq{color:var(--muted)}
+/* exam */
+.exam-q{font-size:23px}
+.msol{margin:16px 0 0;padding-left:1.3em;font-size:21px}
+.msol li{margin-bottom:10px}
+.self{border:1px solid var(--line);border-radius:12px;padding:12px 18px 8px;margin:20px 0 0}
+.self legend{font-family:var(--sans);font-size:15px;font-weight:600;color:var(--muted);padding:0 6px}
+.ck{display:flex;align-items:center;gap:12px;min-height:46px;font-family:var(--sans);font-size:18px;cursor:pointer}
+.ck input{width:22px;height:22px;accent-color:var(--ink);flex:none}
+/* close */
+.closer h3{font-size:28px;margin:8px 0 14px}
+.closer .rules{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:4px 22px}
+.reads{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:20px}
+.reveal{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes lift{0%{background:transparent}40%{background:var(--inside-tint);box-shadow:0 0 0 6px var(--inside-tint)}100%{background:var(--inside-tint)}}
+@keyframes fadein{from{opacity:.3}to{opacity:1}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+@media (max-width:860px){.toc{display:none}}
+@media (max-width:900px){.srow,.srow.fixrow{grid-template-columns:24px minmax(0,1fr)}.snum{padding-top:2px}.slabel{padding-top:0}.sval,.fixcol{grid-column:2}.fixbtn{width:auto}}
+@media (max-width:640px){
+body{font-size:19px}
+.page{padding:0 16px 110px}
+.bar{margin:0 -16px;padding:0 16px}
+.hero{padding:52px 0 16px}
+.dek{font-size:20px}
+.prob,.scard,.exam{padding:22px 16px 18px}
+.pmath{font-size:25px}
+.pipe{flex-direction:column;gap:6px}
+.parr{width:2px;height:18px}
+.parr::after{right:-4px;top:auto;bottom:-1px;border-left:5px solid transparent;border-right:5px solid transparent;border-top:8px solid var(--muted);border-bottom:0}
+.hl-stage{padding:26px 14px}
+.hl-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hl-tab{border-bottom:1px solid var(--line)}
+.sbox{font-size:23px}
+.frow{font-size:21px;gap:8px}
+.rules li{grid-template-columns:minmax(0,1fr)}
+.newtag{grid-column:1}
+.sec{padding-top:96px}
+.sec-n{font-size:46px}
+.rule{padding:30px 16px 26px}
+}
+</style>
+
+</head>
+<body>
+<template id="dc-tpl">
+
+<div class="page">
+<header class="bar">
+<div class="bar-in">
+<a class="brand" href="#top">The chain rule</a>
+<nav class="toc" aria-label="Sections"><a href="#warm">Warm-up</a><a href="#m1">The inside</a><a href="#m2">The rule</a><a href="#m3">Harder examples</a><a href="#exam">Rehearsal</a></nav>
+<sc-if value="{{rulesOpen}}" hint-placeholder-val="{{ false }}"><button type="button" class="scrim" aria-label="Close your rules" onClick="{{closeRules}}"></button></sc-if>
+<button type="button" class="rulesbtn" aria-expanded="{{rulesOpenStr}}" aria-controls="rules-panel" onClick="{{toggleRules}}">Your rules <span class="n">{{ruleCount}}</span></button>
+<sc-if value="{{rulesOpen}}" hint-placeholder-val="{{ false }}">
+<div class="drawer reveal" id="rules-panel" role="region" aria-label="Your rules so far">
+<p class="cap">Your rules so far</p>
+<ul class="rules"><sc-for list="{{ruleList}}" as="r" hint-placeholder-count="8"><li class="{{r.cls}}"><span class="rname">{{r.name}}</span><span class="rf"><sc-for list="{{r.f}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></span></li></sc-for></ul>
+</div>
+</sc-if>
+</div>
+</header>
+
+<main id="top">
+<header class="hero col">
+<p class="kicker">Calculus I · Derivatives</p>
+<h1>The chain rule</h1>
+<p class="dek">How to differentiate a function that sits inside another function.</p>
+<figure class="emblem" aria-label="The function three x plus one, raised to the fifth power. Three x plus one is the inside; the fifth power is the outside.">
+<div class="emb-row" aria-hidden="true"><span class="emb-out">(</span><span class="emb-in"><span class="mn">3</span><span class="mv">x</span><span class="mo"> + </span><span class="mn">1</span></span><span class="emb-out">)</span><span class="emb-sup">5</span></div>
+<figcaption class="emb-legend"><span class="leg leg-in"><span class="sw sw-in"></span><span><b>Inside</b>, computed first</span></span><span class="leg leg-out"><span class="sw sw-out"></span><span><b>Outside</b>, applied next</span></span></figcaption>
+</figure>
+</header>
+
+<sc-for list="{{blocks}}" as="b" hint-placeholder-count="6">
+
+<sc-if value="{{b.isSec}}"><div class="col sec" id="{{b.id}}"><div class="sec-top"><sc-if value="{{b.hasNum}}"><span class="sec-n">{{b.num}}</span></sc-if><h2>{{b.title}}</h2></div><sc-if value="{{b.hasLede}}"><p class="lede"><sc-for list="{{b.lede}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p></sc-if></div></sc-if>
+
+<sc-if value="{{b.isProse}}"><div class="col prose"><sc-if value="{{b.hasTitle}}"><h3>{{b.title}}</h3></sc-if><sc-for list="{{b.paras}}" as="pa"><p><sc-for list="{{pa.segs}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p></sc-for></div></sc-if>
+
+<sc-if value="{{b.isProbs}}"><div class="probs">
+<sc-for list="{{b.items}}" as="p">
+<article class="prob {{p.cls}}" id="{{p.anchor}}">
+<div class="prob-head"><sc-if value="{{p.hasLabel}}"><span class="plabel">{{p.label}}</span></sc-if><span class="ptask">{{p.task}}</span><span class="pmath"><sc-for list="{{p.prompt}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></span></div>
+<sc-if value="{{p.locked}}"><p class="locked">{{p.lockText}}</p></sc-if>
+<sc-if value="{{p.open}}"><div class="work">
+<sc-if value="{{p.hasHint}}"><details class="hintd"><summary><span>Hint</span><span class="chev" aria-hidden="true"></span></summary><p><sc-for list="{{p.hint}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p></details></sc-if>
+<div class="ansrow"><span class="lhs" aria-hidden="true"><span class="mv">f</span><span class="mn">′(</span><span class="mv">x</span><span class="mn">) =</span></span><input class="minput" type="text" id="{{p.id}}" value="{{p.val}}" onChange="{{p.change}}" onFocus="{{p.focus}}" onSelect="{{p.sel}}" onKeyDown="{{p.key}}" aria-label="{{p.aria}}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type, or use the keys below"><button type="button" class="btn" onClick="{{p.check}}">Check</button></div>
+<sc-if value="{{p.showPal}}"><div class="pal" role="group" aria-label="Math keys"><sc-for list="{{p.keys}}" as="k"><button type="button" class="key" aria-label="{{k.aria}}" onMouseDown="{{k.hold}}" onClick="{{k.press}}">{{k.label}}</button></sc-for></div></sc-if>
+<sc-if value="{{p.hasPv}}"><div class="pv"><sc-for list="{{p.pv}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div></sc-if>
+<div class="fb {{p.fbCls}}" aria-live="polite"><sc-for list="{{p.fb}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div>
+<sc-if value="{{p.canReveal}}"><div class="aft"><button type="button" class="link" onClick="{{p.reveal}}">{{p.revealLabel}}</button></div></sc-if>
+<sc-if value="{{p.showSol}}"><div class="sol reveal"><p class="cap">Solution</p><sc-for list="{{p.sol}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div></sc-if>
+<sc-if value="{{p.hasRep}}"><div class="repair reveal" role="region" aria-label="{{p.repName}}">
+<p class="cap">{{p.repName}}</p>
+<p class="diag"><sc-for list="{{p.repDiag}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+<p class="cap2">Your problem, done right</p>
+<p><sc-for list="{{p.sol}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+<p class="cap2">One more of the same kind</p>
+<div class="prob-head"><span class="ptask">Find the derivative of</span><span class="pmath"><sc-for list="{{p.rp.prompt}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></span></div>
+<div class="ansrow"><span class="lhs" aria-hidden="true"><span class="mv">f</span><span class="mn">′(</span><span class="mv">x</span><span class="mn">) =</span></span><input class="minput" type="text" id="{{p.rp.id}}" value="{{p.rp.val}}" onChange="{{p.rp.change}}" onFocus="{{p.rp.focus}}" onSelect="{{p.rp.sel}}" onKeyDown="{{p.rp.key}}" aria-label="{{p.rp.aria}}" autocomplete="off" autocapitalize="off" spellcheck="false"><button type="button" class="btn" onClick="{{p.rp.check}}">Check</button></div>
+<sc-if value="{{p.rp.showPal}}"><div class="pal" role="group" aria-label="Math keys"><sc-for list="{{p.keys}}" as="k"><button type="button" class="key" aria-label="{{k.aria}}" onMouseDown="{{k.hold}}" onClick="{{k.press}}">{{k.label}}</button></sc-for></div></sc-if>
+<sc-if value="{{p.rp.hasPv}}"><div class="pv"><sc-for list="{{p.rp.pv}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div></sc-if>
+<div class="fb {{p.rp.fbCls}}" aria-live="polite"><sc-for list="{{p.rp.fb}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div>
+<sc-if value="{{p.rp.canReveal}}"><div class="aft"><button type="button" class="link" onClick="{{p.rp.reveal}}">Show the solution</button></div></sc-if>
+<sc-if value="{{p.rp.showSol}}"><div class="sol reveal"><sc-for list="{{p.rp.sol}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div></sc-if>
+</div></sc-if>
+</div></sc-if>
+</article>
+</sc-for>
+</div></sc-if>
+
+<sc-if value="{{b.isMachine}}"><div class="col"><figure class="machine">
+<p class="mbig"><sc-for list="{{b.big}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+<div class="chain" aria-live="polite">
+<sc-for list="{{b.steps}}" as="st">
+<sc-if value="{{st.arrow}}"><div class="carr" aria-hidden="true"><svg width="18" height="26" viewBox="0 0 18 26"><path class="arrp" d="M9 2 V22 M3 16 L9 22 L15 16"></path></svg></div></sc-if>
+<div class="cline {{st.cls}}"><sc-for list="{{st.segs}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div>
+</sc-for>
+</div>
+<div class="pick" role="group" aria-label="Choose a value of x to plug in"><span>Try another x:</span><sc-for list="{{b.opts}}" as="o"><button type="button" class="chip-s {{o.cls}}" aria-pressed="{{o.on}}" onClick="{{o.press}}">x = {{o.v}}</button></sc-for></div>
+<div class="pipe">
+<div class="pnode"><span class="pk"><span class="pku">x</span></span><span class="pv2"><span class="k">{{b.x}}</span></span></div>
+<span class="parr" aria-hidden="true"></span>
+<div class="pbox pin"><span class="pk">inside (<span class="pku">u</span>)</span><span class="pf"><span class="mn">3</span><span class="mv">x</span><span class="mo"> + </span><span class="mn">1</span></span></div>
+<span class="parr" aria-hidden="true"></span>
+<div class="pnode pin-n"><span class="pk">inside (<span class="pku">u</span>)</span><span class="pv2">{{b.u}}</span></div>
+<span class="parr" aria-hidden="true"></span>
+<div class="pbox pout"><span class="pk">outside</span><span class="pf"><span class="mv">u</span><sup class="ms">2</sup></span></div>
+<span class="parr" aria-hidden="true"></span>
+<div class="pnode"><span class="pk"><span class="pku">f</span>(<span class="pku">x</span>)</span><span class="pv2">{{b.y}}</span></div>
+</div>
+<p class="mu"><sc-for list="{{b.u1}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+</figure></div></sc-if>
+
+<sc-if value="{{b.isHL}}"><div class="col"><div class="hl">
+<div class="hl-tabs" role="group" aria-label="Choose a function"><sc-for list="{{b.tabs}}" as="tb"><button type="button" class="hl-tab {{tb.cls}}" aria-current="{{tb.cur}}" aria-label="{{tb.aria}}" onClick="{{tb.go}}"><sc-for list="{{tb.segs}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></button></sc-for></div>
+<div class="hl-stage">
+<p class="hl-count">{{b.count}}</p>
+<div class="hl-formula {{b.formCls}}"><sc-for list="{{b.formula}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div>
+<sc-if value="{{b.unsolved}}"><div>
+<p class="hl-ask">Which is the inside?</p>
+<div class="chips"><sc-for list="{{b.choices}}" as="c"><button type="button" class="chip {{c.cls}}" onClick="{{c.pick}}"><sc-for list="{{c.segs}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></button></sc-for></div>
+<sc-if value="{{b.hasWrong}}"><p class="fb fb-no" role="status"><sc-for list="{{b.wrong}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p></sc-if>
+</div></sc-if>
+<sc-if value="{{b.solved}}"><div class="hl-out reveal" role="status">
+<p class="fb fb-ok" style="margin: 0 0 10px; font-size: 19px">Correct.</p>
+<p class="hl-line"><sc-for list="{{b.l1}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+<p class="hl-line"><sc-for list="{{b.l2}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+<sc-if value="{{b.hasNote}}"><p class="hl-note"><sc-for list="{{b.note}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p></sc-if>
+<sc-if value="{{b.hasNext}}"><button type="button" class="btn" onClick="{{b.next}}">Next function</button></sc-if>
+</div></sc-if>
+<sc-if value="{{b.allDone}}"><p class="hl-done">All six have the same shape: an outside acting on an inside.</p></sc-if>
+</div>
+</div></div></sc-if>
+
+<sc-if value="{{b.isRule}}"><div class="col"><figure class="rule">
+<h3 class="rule-name">The chain rule</h3>
+<p class="memo"><span>Memorize this</span></p>
+<div class="rule-eq"><sc-for list="{{b.eq}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div>
+<p class="rule-words"><sc-for list="{{b.words}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+<p class="rule-u"><sc-for list="{{b.uline}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+</figure></div></sc-if>
+
+<sc-if value="{{b.isWhy}}"><details class="whyd">
+<summary><span>Why does this work? <span class="opt">(Optional)</span></span><span class="chev" aria-hidden="true"></span></summary>
+<ul>
+<li>For a visual explanation, watch <a href="https://www.youtube.com/watch?v=YG15m2VwSjA" target="_blank" rel="noopener">this video from the start to 1:48</a>, then <a href="https://www.youtube.com/watch?v=YG15m2VwSjA&amp;t=521s" target="_blank" rel="noopener">from 8:41 to the end</a>.</li>
+<li>For an algebraic explanation, read <a href="https://tutorial.math.lamar.edu/classes/calci/DerivativeProofs.aspx#Extras_DerPf_ChainRule" target="_blank" rel="noopener">the proof of the chain rule in Paul’s Online Math Notes</a>.</li>
+</ul>
+</details></sc-if>
+
+<sc-if value="{{b.isCard}}"><div class="col"><article class="scard" id="{{b.anchor}}">
+<p class="cap">{{b.cap}}</p>
+<p class="ctitle"><sc-for list="{{b.title}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+<div class="srows"><sc-for list="{{b.rows}}" as="r">
+<div class="srow {{r.cls}}">
+<span class="snum" aria-hidden="true">{{r.n}}</span>
+<label class="slabel" for="{{r.id}}"><sc-for list="{{r.label}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></label>
+<div class="sval">
+<sc-if value="{{r.isShown}}"><div><div class="vrow"><div class="sbox {{r.boxCls}}"><sc-for list="{{r.show}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div><span class="bmark" aria-hidden="true"></span></div><sc-if value="{{r.isGiven}}"><span class="gtag">Given</span></sc-if></div></sc-if>
+<sc-if value="{{r.isInput}}"><div>
+<div class="vrow"><input class="minput" type="text" id="{{r.id}}" value="{{r.val}}" onChange="{{r.change}}" onFocus="{{r.focus}}" onSelect="{{r.sel}}" onKeyDown="{{r.key}}" autocomplete="off" autocapitalize="off" spellcheck="false"><span class="bmark" aria-hidden="true">{{r.mark}}</span></div>
+<sc-if value="{{r.showPal}}"><div class="pal" role="group" aria-label="Math keys"><sc-for list="{{r.keys}}" as="k"><button type="button" class="key" aria-label="{{k.aria}}" onMouseDown="{{k.hold}}" onClick="{{k.press}}">{{k.label}}</button></sc-for></div></sc-if>
+<sc-if value="{{r.hasPv}}"><div class="pv"><sc-for list="{{r.pv}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div></sc-if>
+<div class="fb {{r.fbCls}}" aria-live="polite"><sc-for list="{{r.fb}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div>
+<div class="rowacts"><button type="button" class="btn sm" onClick="{{r.check}}">Check</button><sc-if value="{{r.canShow}}"><button type="button" class="link" onClick="{{r.showAns}}">Show this row</button></sc-if></div>
+</div></sc-if>
+</div>
+</div>
+</sc-for></div>
+</article></div></sc-if>
+
+<sc-if value="{{b.isFix}}"><div class="col"><article class="scard" id="mistake">
+<p class="cap">Find the mistake</p>
+<p class="ctitle"><sc-for list="{{b.title}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+<div class="srows"><sc-for list="{{b.rows}}" as="r">
+<div class="srow fixrow">
+<span class="snum" aria-hidden="true">{{r.n}}</span>
+<label class="slabel" for="{{r.id}}"><sc-for list="{{r.label}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></label>
+<div class="sval">
+<sc-if value="{{r.notEditing}}"><div><div class="sbox {{r.boxCls}}"><sc-for list="{{r.show}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div><sc-if value="{{r.hasTag}}"><span class="etag">{{r.tag}}</span></sc-if></div></sc-if>
+<sc-if value="{{r.editing}}"><div>
+<input class="minput" type="text" id="{{r.id}}" value="{{r.val}}" onChange="{{r.change}}" onFocus="{{r.focus}}" onSelect="{{r.sel}}" onKeyDown="{{r.key}}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="{{r.aria}}">
+<sc-if value="{{r.showPal}}"><div class="pal" role="group" aria-label="Math keys"><sc-for list="{{r.keys}}" as="k"><button type="button" class="key" aria-label="{{k.aria}}" onMouseDown="{{k.hold}}" onClick="{{k.press}}">{{k.label}}</button></sc-for></div></sc-if>
+<sc-if value="{{r.hasPv}}"><div class="pv"><sc-for list="{{r.pv}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></div></sc-if>
+<sc-if value="{{r.hasErr}}"><p class="fb fb-err">{{r.err}}</p></sc-if>
+<div class="rowacts"><button type="button" class="btn sm" onClick="{{r.evaluate}}">Evaluate</button><button type="button" class="btn sm ghost" onClick="{{r.cancel}}">Cancel</button></div>
+</div></sc-if>
+</div>
+<div class="fixcol"><button type="button" class="fixbtn" disabled="{{r.dis}}" onClick="{{r.fix}}">Fix this row</button></div>
+</div>
+</sc-for></div>
+<div class="status {{b.stCls}}" role="status"><span class="dot" aria-hidden="true"></span><span><sc-for list="{{b.stMsg}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></span></div>
+<sc-if value="{{b.canReset}}"><div class="aft"><button type="button" class="link" onClick="{{b.reset}}">Start this example over</button></div></sc-if>
+</article></div></sc-if>
+
+<sc-if value="{{b.isForms}}"><div class="col"><div class="forms" role="list"><sc-for list="{{b.rows}}" as="fr"><div class="frow" role="listitem"><span class="fl"><sc-for list="{{fr.l}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></span><span class="feq">=</span><span class="fr"><sc-for list="{{fr.r}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></span></div></sc-for></div></div></sc-if>
+
+<sc-if value="{{b.isExam}}"><div class="col"><article class="exam">
+<p class="cap">As an exam would set it</p>
+<p class="exam-q"><sc-for list="{{b.q}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></p>
+<sc-if value="{{b.closed}}"><div><p class="muted">Work it on paper first, every step written out.</p><button type="button" class="btn" onClick="{{b.open}}">I have written it out</button></div></sc-if>
+<sc-if value="{{b.isOpen}}"><div class="reveal">
+<p class="cap">Model solution</p>
+<ol class="msol"><sc-for list="{{b.lines}}" as="ln"><li><sc-for list="{{ln.segs}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></li></sc-for></ol>
+<fieldset class="self"><legend>Does your written solution show each of these?</legend>
+<sc-for list="{{b.checks}}" as="ck"><label class="ck"><input type="checkbox" checked="{{ck.on}}" onChange="{{ck.toggle}}"><span>{{ck.text}}</span></label></sc-for>
+</fieldset>
+<sc-if value="{{b.allChecked}}"><p class="note">All three are there: the whole method, in the form an exam expects.</p></sc-if>
+</div></sc-if>
+</article></div></sc-if>
+
+<sc-if value="{{b.isClose}}"><div class="col closer">
+<h3>Your rules</h3>
+<ul class="rules"><sc-for list="{{b.rules}}" as="r"><li class="{{r.cls}}"><span class="rname">{{r.name}}</span><span class="rf"><sc-for list="{{r.f}}" as="g"><sc-if value="{{g.sup}}"><sup class="{{g.cls}}">{{g.s}}</sup></sc-if><sc-if value="{{g.nsup}}"><span class="{{g.cls}}">{{g.s}}</span></sc-if></sc-for></span><sc-if value="{{r.isNew}}"><span class="newtag">Added on this page</span></sc-if></li></sc-for></ul>
+<h3 style="margin-top: 44px">Read more</h3>
+<ul class="reads">
+<li><a href="https://tutorial.math.lamar.edu/Classes/CalcI/ChainRule.aspx" target="_blank" rel="noopener">Paul’s Online Math Notes: Chain Rule</a></li>
+<li><a href="https://tutorial.math.lamar.edu/Classes/CalcI/DiffExpLogFcns.aspx" target="_blank" rel="noopener">Paul’s Online Math Notes: Derivatives of Exponential and Logarithm Functions</a></li>
+</ul>
+</div></sc-if>
+
+</sc-for>
+</main>
+</div>
+</template>
+<div id="dc-app"></div>
+<script>/* Preact 10, MIT License, https://preactjs.com */
+!function(n){"function"==typeof define&&define.amd?define(n):n()}(function(){var n,t,e,i,r,o,f,u,c,a,s,h,l,p,y,d,v,_="http://www.w3.org/2000/svg",w="http://www.w3.org/1999/xhtml",m=null,g=void 0,b={},k=[],x=/acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i,C=Array.isArray;function M(n,t){for(var e in t)n[e]=t[e];return n}function S(n){n&&n.parentNode&&n.parentNode.removeChild(n)}function $(t,e,i){var r,o,f,u={};for(f in e)"key"==f?r=e[f]:"ref"==f?o=e[f]:u[f]=e[f];if(arguments.length>2&&(u.children=arguments.length>3?n.call(arguments,2):i),"function"==typeof t&&t.defaultProps!=m)for(f in t.defaultProps)u[f]===g&&(u[f]=t.defaultProps[f]);return A(t,u,r,o,m)}function A(n,i,r,o,f){var u={type:n,props:i,key:r,ref:o,__k:m,__:m,__b:0,__e:m,__c:m,constructor:g,__v:f==m?++e:f,__i:-1,__u:0};return f==m&&t.vnode!=m&&t.vnode(u),u}function I(n){return n.children}function P(n,t){this.props=n,this.context=t}function E(n,t){if(t==m)return n.__?E(n.__,n.__i+1):m;for(var e;t<n.__k.length;t++)if((e=n.__k[t])!=m&&e.__e!=m)return e.__e;return"function"==typeof n.type?E(n):m}function F(n){if(n.__P&&n.__d){var e=n.__v,i=e.__e,r=[],o=[],f=M({},e);f.__v=e.__v+1,t.vnode&&t.vnode(f),B(n.__P,f,e,n.__n,n.__P.namespaceURI,32&e.__u?[i]:m,r,i==m?E(e):i,!!(32&e.__u),o),f.__v=e.__v,f.__.__k[f.__i]=f,G(r,f,o),e.__e=e.__=null,f.__e!=i&&H(f)}}function H(n){if((n=n.__)!=m&&n.__c!=m)return n.__e=n.__c.base=m,n.__k.some(function(t){if(t!=m&&t.__e!=m)return n.__e=n.__c.base=t.__e}),H(n)}function L(n){(!n.__d&&(n.__d=!0)&&r.push(n)&&!T.__r++||o!=t.debounceRendering)&&((o=t.debounceRendering)||f)(T)}function T(){try{for(var n,t=1;r.length;)r.length>t&&r.sort(u),n=r.shift(),t=r.length,F(n)}finally{r.length=T.__r=0}}function j(n,t,e,i,r,o,f,u,c,a,s){var h,l,p,y,d,v,_=i&&i.__k||k,w=t.length;for(c=O(e,t,_,c,w),h=0;h<w;h++)(p=e.__k[h])!=m&&(l=-1!=p.__i&&_[p.__i]||b,p.__i=h,v=B(n,p,l,r,o,f,u,c,a,s),y=p.__e,p.ref&&l.ref!=p.ref&&(l.ref&&Q(l.ref,m,p),s.push(p.ref,p.__c||y,p)),d==m&&y!=m&&(d=y),4&p.__u?(c=V(p,c,n),l.__e&&(l.__e=m)):"function"==typeof p.type&&v!==g?c=v:y&&(c=y.nextSibling),p.__u&=-7);return e.__e=d,c}function O(n,t,e,i,r){var o,f,u,c,a,s=e.length,h=s,l=0;for(n.__k=new Array(r),o=0;o<r;o++)(f=t[o])!=m&&"boolean"!=typeof f&&"function"!=typeof f?("string"==typeof f||"number"==typeof f||"bigint"==typeof f||f.constructor==String?f=n.__k[o]=A(m,f,m,m,m):C(f)?f=n.__k[o]=A(I,{children:f},m,m,m):f.constructor===g&&f.__b>0?f=n.__k[o]=A(f.type,f.props,f.key,f.ref?f.ref:m,f.__v):n.__k[o]=f,c=o+l,f.__=n,f.__b=n.__b+1,a=f.__i=z(f,e,c,h),u=m,-1!=a&&(h--,(u=e[a])&&(u.__u|=2)),u==m||u.__v==m?(-1==a&&(r>s?l--:r<s&&l++),"function"!=typeof f.type&&(f.__u|=4)):a!=c&&(a==c-1?l--:a==c+1?l++:(a>c?l--:l++,f.__u|=4))):n.__k[o]=m;if(h)for(o=0;o<s;o++)(u=e[o])!=m&&0==(2&u.__u)&&(u.__e==i&&(i=E(u)),U(u,u));return i}function V(n,t,e){var i,r;if("function"==typeof n.type){for(i=n.__k,r=0;i&&r<i.length;r++)i[r]&&(i[r].__=n,t=V(i[r],t,e));return t}n.__e!=t&&(t&&n.type&&!t.parentNode&&(t=E(n)),t=e.insertBefore(n.__e,t||m));do{t=t&&t.nextSibling}while(t!=m&&8==t.nodeType);return t}function z(n,t,e,i){var r,o,f,u=n.key,c=n.type,a=t[e],s=a!=m&&0==(2&a.__u);if(a===m&&null==u||s&&u==a.key&&c==a.type)return e;if(i>(s?1:0))for(r=e-1,o=e+1;r>=0||o<t.length;)if((a=t[f=r>=0?r--:o++])!=m&&0==(2&a.__u)&&u==a.key&&c==a.type)return f;return-1}function N(n,t,e){"-"==t[0]?n.setProperty(t,e==m?"":e):n[t]=e==m?"":"number"!=typeof e||x.test(t)?e:e+"px"}function R(n,t,e,i,r){var o,f;n:if("style"==t)if("string"==typeof e)n.style.cssText=e;else{if("string"==typeof i&&(n.style.cssText=i=""),i)for(t in i)e&&t in e||N(n.style,t,"");if(e)for(t in e)i&&e[t]==i[t]||N(n.style,t,e[t])}else if("o"==t[0]&&"n"==t[1])o=t!=(t=t.replace(h,"$1")),f=t.toLowerCase(),t=f in n||"onFocusOut"==t||"onFocusIn"==t?f.slice(2):t.slice(2),n.l||(n.l={}),n.l[t+o]=e,e?i?e[s]=i[s]:(e[s]=l,n.addEventListener(t,o?y:p,o)):n.removeEventListener(t,o?y:p,o);else{if(r==_)t=t.replace(/xlink(H|:h)/,"h").replace(/sName$/,"s");else if("width"!=t&&"height"!=t&&"href"!=t&&"list"!=t&&"form"!=t&&"tabIndex"!=t&&"download"!=t&&"rowSpan"!=t&&"colSpan"!=t&&"role"!=t&&"popover"!=t&&t in n)try{n[t]=e==m?"":e;break n}catch(n){}"function"==typeof e||(e==m||!1===e&&"-"!=t[4]?n.removeAttribute(t):n.setAttribute(t,"popover"==t&&1==e?"":e))}}function q(n){return function(e){if(this.l){var i=this.l[e.type+n];if(e[a]==m)e[a]=l++;else if(e[a]<i[s])return;return i(t.event?t.event(e):e)}}}function B(n,e,i,r,o,f,u,c,a,s){var h,l,p,y,d,v,_,w,b,x,$,A,F,H,L,T,O=e.type;if(e.constructor!==g)return m;128&i.__u&&(a=!!(32&i.__u),f=[c=e.__e=i.__e]),(h=t.__b)&&h(e);n:if("function"==typeof O){l=u.length;try{if(b=e.props,x=O.prototype&&O.prototype.render,$=(h=O.contextType)&&r[h.__c],A=h?$?$.props.value:h.__:r,i.__c?w=(p=e.__c=i.__c).__=p.__E:(x?e.__c=p=new O(b,A):(e.__c=p=new P(b,A),p.constructor=O,p.render=W),$&&$.sub(p),p.state||(p.state={}),p.__n=r,y=p.__d=!0,p.__h=[],p._sb=[]),x&&p.__s==m&&(p.__s=p.state),x&&O.getDerivedStateFromProps!=m&&(p.__s==p.state&&(p.__s=M({},p.__s)),M(p.__s,O.getDerivedStateFromProps(b,p.__s))),d=p.props,v=p.state,p.__v=e,y)x&&O.getDerivedStateFromProps==m&&p.componentWillMount!=m&&p.componentWillMount(),x&&p.componentDidMount!=m&&p.__h.push(p.componentDidMount);else{if(x&&O.getDerivedStateFromProps==m&&b!==d&&p.componentWillReceiveProps!=m&&p.componentWillReceiveProps(b,A),e.__v==i.__v||!p.__e&&p.shouldComponentUpdate!=m&&!1===p.shouldComponentUpdate(b,p.__s,A)){e.__v!=i.__v&&(p.props=b,p.state=p.__s,p.__d=!1),e.__e=i.__e,e.__k=i.__k,e.__k.some(function(n){n&&(n.__=e)}),k.push.apply(p.__h,p._sb),p._sb=[],p.__h.length&&u.push(p),c=E(i);break n}p.componentWillUpdate!=m&&p.componentWillUpdate(b,p.__s,A),x&&p.componentDidUpdate!=m&&p.__h.push(function(){p.componentDidUpdate(d,v,_)})}if(p.context=A,p.props=b,p.__P=n,p.__e=!1,F=t.__r,H=0,x)p.state=p.__s,p.__d=!1,F&&F(e),h=p.render(p.props,p.state,p.context),k.push.apply(p.__h,p._sb),p._sb=[];else do{p.__d=!1,F&&F(e),h=p.render(p.props,p.state,p.context),p.state=p.__s}while(p.__d&&++H<25);p.state=p.__s,p.getChildContext!=m&&(r=M(M({},r),p.getChildContext())),x&&!y&&p.getSnapshotBeforeUpdate!=m&&(_=p.getSnapshotBeforeUpdate(d,v)),L=h!=m&&h.type===I&&h.key==m?J(h.props.children):h,c=j(n,C(L)?L:[L],e,i,r,o,f,u,c,a,s),p.base=e.__e,e.__u&=-161,p.__h.length&&u.push(p),w&&(p.__E=p.__=m)}catch(n){if(u.length=l,e.__v=m,a||f!=m){if(n.then){for(e.__u|=a?160:128;c&&8==c.nodeType&&c.nextSibling;)c=c.nextSibling;f!=m&&(f[f.indexOf(c)]=m),e.__e=c}else if(f!=m)for(T=f.length;T--;)S(f[T])}else e.__e=i.__e;e.__k==m&&(e.__k=i.__k||[]),n.then||D(e),t.__e(n,e,i)}}else f==m&&e.__v==i.__v?(e.__k=i.__k,e.__e=i.__e):c=e.__e=K(i.__e,e,i,r,o,f,u,a,s);return(h=t.diffed)&&h(e),128&e.__u?void 0:c}function D(n){n&&(n.__c&&(n.__c.__e=!0),n.__k&&n.__k.some(D))}function G(n,e,i){for(var r=0;r<i.length;r++)Q(i[r],i[++r],i[++r]);t.__c&&t.__c(e,n),n.some(function(e){try{n=e.__h,e.__h=[],n.some(function(n){n.call(e)})}catch(n){t.__e(n,e.__v)}})}function J(n){return"object"!=typeof n||n==m||n.__b>0?n:C(n)?n.map(J):n.constructor!==g?null:M({},n)}function K(e,i,r,o,f,u,c,a,s){var h,l,p,y,d,v,k,x=r.props||b,M=i.props,$=i.type;if("svg"==$?f=_:"math"==$?f="http://www.w3.org/1998/Math/MathML":f||(f=w),u!=m)for(h=0;h<u.length;h++)if((d=u[h])&&"setAttribute"in d==!!$&&($?d.localName==$:3==d.nodeType)){e=d,u[h]=m;break}if(e==m){if($==m)return document.createTextNode(M);e=document.createElementNS(f,$,M.is&&M),a&&(t.__m&&t.__m(i,u),a=!1),u=m}if($==m)x===M||a&&e.data==M||(e.data=M);else{if(u="textarea"==$&&M.defaultValue!=m?m:u&&n.call(e.childNodes),!a&&u!=m)for(x={},h=0;h<e.attributes.length;h++)x[(d=e.attributes[h]).name]=d.value;for(h in x)d=x[h],"dangerouslySetInnerHTML"==h?p=d:"children"==h||h in M||"value"==h&&"defaultValue"in M||"checked"==h&&"defaultChecked"in M||R(e,h,m,d,f);for(h in M)d=M[h],"children"==h?y=d:"dangerouslySetInnerHTML"==h?l=d:"value"==h?v=d:"checked"==h?k=d:a&&"function"!=typeof d||x[h]===d||R(e,h,d,x[h],f);if(l)a||p&&(l.__html==p.__html||l.__html==e.innerHTML)||(e.innerHTML=l.__html),i.__k=[];else if(p&&(e.innerHTML=""),j("template"==i.type?e.content:e,C(y)?y:[y],i,r,o,"foreignObject"==$?w:f,u,c,u?u[0]:r.__k&&E(r,0),a,s),u!=m)for(h=u.length;h--;)S(u[h]);a&&"textarea"!=$||(h="value","progress"==$&&v==m?e.removeAttribute("value"):v!=g&&(v!==e[h]||"progress"==$&&!v||"option"==$&&v!=x[h])&&R(e,h,v,x[h],f),h="checked",k!=g&&k!=e[h]&&R(e,h,k,x[h],f))}return e}function Q(n,e,i){try{if("function"==typeof n){var r="function"==typeof n.__u;r&&n.__u(),r&&e==m||(n.__u=n(e))}else n.current=e}catch(n){t.__e(n,i)}}function U(n,e,i){var r,o;if(t.unmount&&t.unmount(n),(r=n.ref)&&(r.current&&r.current!=n.__e||Q(r,m,e)),(r=n.__c)!=m){if(r.componentWillUnmount)try{r.componentWillUnmount()}catch(n){t.__e(n,e)}r.base=r.__P=r.__n=m}if(r=n.__k)for(o=0;o<r.length;o++)r[o]&&U(r[o],e,i||"function"!=typeof n.type);i||S(n.__e),n.__c=n.__=n.__e=g}function W(n,t,e){return this.constructor(n,e)}function X(e,i,r){var o,f,u,c;i==document&&(i=document.documentElement),t.__&&t.__(e,i),f=(o="function"==typeof r)?m:r&&r.__k||i.__k,u=[],c=[],B(i,e=(!o&&r||i).__k=$(I,m,[e]),f||b,b,i.namespaceURI,!o&&r?[r]:f?m:i.firstChild?n.call(i.childNodes):m,u,!o&&r?r:f?f.__e:i.firstChild,o,c),G(u,e,c),e.props.children=m}n=k.slice,t={__e:function(n,t,e,i){for(var r,o,f;t=t.__;)if((r=t.__c)&&!r.__)try{if((o=r.constructor)&&o.getDerivedStateFromError!=m&&(r.setState(o.getDerivedStateFromError(n)),f=r.__d),r.componentDidCatch!=m&&(r.componentDidCatch(n,i||{}),f=r.__d),f)return r.__E=r}catch(t){n=t}throw n}},e=0,i=function(n){return n!=m&&n.constructor===g},P.prototype.setState=function(n,t){var e;e=this.__s!=m&&this.__s!=this.state?this.__s:this.__s=M({},this.state),"function"==typeof n&&(n=n(M({},e),this.props)),n&&M(e,n),n!=m&&this.__v&&(t&&this._sb.push(t),L(this))},P.prototype.forceUpdate=function(n){this.__v&&(this.__e=!0,n&&this.__h.push(n),L(this))},P.prototype.render=I,r=[],f="function"==typeof Promise?Promise.prototype.then.bind(Promise.resolve()):setTimeout,u=function(n,t){return n.__v.__b-t.__v.__b},T.__r=0,c=Math.random().toString(8),a="__d"+c,s="__a"+c,h=/(PointerCapture)$|Capture$/i,l=0,p=q(!1),y=q(!0),d=0,v={__proto__:null,render:X,hydrate:function n(t,e){X(t,e,n)},createElement:$,h:$,Fragment:I,createRef:function(){return{current:m}},isValidElement:i,Component:P,cloneElement:function(t,e,i){var r,o,f,u,c=M({},t.props);for(f in t.type&&t.type.defaultProps&&(u=t.type.defaultProps),e)"key"==f?r=e[f]:"ref"==f?o=e[f]:c[f]=e[f]===g&&u!=g?u[f]:e[f];return arguments.length>2&&(c.children=arguments.length>3?n.call(arguments,2):i),A(t.type,c,r||t.key,o||t.ref,m)},createContext:function(n){function t(n){var e,i;return this.getChildContext||(e=new Set,(i={})[t.__c]=this,this.getChildContext=function(){return i},this.componentWillUnmount=function(){e=m},this.shouldComponentUpdate=function(n){this.props.value!=n.value&&e.forEach(function(n){n.__e=!0,L(n)})},this.sub=function(n){e.add(n);var t=n.componentWillUnmount;n.componentWillUnmount=function(){e&&e.delete(n),t&&t.call(n)}}),n.children}return t.__c="__cC"+d++,t.__=n,t.Provider=t.__l=(t.Consumer=function(n,t){return n.children(t)}).contextType=t,t},toChildArray:function n(t,e){return e=e||[],t==m||"boolean"==typeof t||(C(t)?t.some(function(t){n(t,e)}):e.push(t)),e},options:t},typeof module<"u"?module.exports=v:self.preact=v});
+//# sourceMappingURL=preact.min.umd.js.map
+</script>
+<script>
+/*
+ * dc-runtime.js: a small standalone renderer for Claude Design ".dc.html" templates.
+ *
+ * Supports what the chain rule page uses: {{dotted.path}} holes (whole-value and
+ * interpolated), <sc-if value>, <sc-for list as> (with $index), event attributes
+ * (onClick, onChange, onKeyDown, onFocus, onSelect, onMouseDown, onPointer*), and a
+ * logic class `class Component extends DCLogic` with state/setState and the
+ * componentDidMount / componentDidUpdate lifecycle. Rendering and DOM diffing are
+ * done by Preact (window.preact), which must be loaded first.
+ *
+ * Not supported: <dc-import> child components, data-props editors, prototype links.
+ */
+(function () {
+  var P = window.preact;
+  var h = P.h, render = P.render;
+
+  var logic = null, root = null, tpl = null, rendering = false, again = false, mounted = false;
+
+  function DCLogic(props) { this.props = props || {}; this.state = {}; }
+  DCLogic.prototype.setState = function (o) {
+    var patch = typeof o === 'function' ? o(this.state, this.props) : o;
+    this.state = Object.assign({}, this.state, patch);
+    paint();
+  };
+  DCLogic.prototype.forceUpdate = function () { paint(); };
+  window.DCLogic = DCLogic;
+
+  var HOLE = /\{\{\s*([^}]+?)\s*\}\}/g;
+  var WHOLE = /^\s*\{\{\s*([^}]+?)\s*\}\}\s*$/;
+
+  function lookup(path, scope) {
+    path = path.trim();
+    if (path === 'true') return true;
+    if (path === 'false') return false;
+    if (path === 'null') return null;
+    if (/^-?\d+(\.\d+)?$/.test(path)) return parseFloat(path);
+    if (/^'.*'$/.test(path) || /^".*"$/.test(path)) return path.slice(1, -1);
+    var parts = path.split('.');
+    var v = scope;
+    for (var i = 0; i < parts.length; i++) {
+      if (v == null) return undefined;
+      v = v[parts[i]];
+    }
+    return v;
+  }
+  function interp(text, scope) {
+    return text.replace(HOLE, function (_, p) { var v = lookup(p, scope); return v == null ? '' : String(v); });
+  }
+  function value(text, scope) {
+    var m = text.match(WHOLE);
+    return m ? lookup(m[1], scope) : interp(text, scope);
+  }
+
+  var EVENT_FIX = { onchange: true, onselect: true };
+
+  function props(el, scope) {
+    var out = {}, tag = el.tagName.toLowerCase();
+    var type = (el.getAttribute('type') || '').toLowerCase();
+    for (var i = 0; i < el.attributes.length; i++) {
+      var a = el.attributes[i], name = a.name, raw = a.value;
+      if (name.indexOf('hint-') === 0 || name === 'data-dc-script') continue;
+      var v = value(raw, scope);
+      var lname = name.toLowerCase();
+      if (lname.slice(0, 2) === 'on') {
+        if (typeof v !== 'function') continue;
+        if (lname === 'onchange' && (tag === 'textarea' || (tag === 'input' && type !== 'checkbox' && type !== 'radio'))) { out.onInput = v; continue; }
+        if (lname === 'onselect') { out.onSelect = v; out.onKeyUp = v; out.onMouseUp = v; continue; }
+        out['on' + lname.charAt(2).toUpperCase() + lname.slice(3)] = v;
+        continue;
+      }
+      if (name === 'class') { out['class'] = v; continue; }
+      out[name] = v;
+    }
+    return out;
+  }
+
+  function build(node, scope) {
+    if (node.nodeType === 3) {
+      var t = node.nodeValue;
+      if (/^\s*$/.test(t) && t.indexOf('\n') >= 0) return null;
+      return t.indexOf('{{') >= 0 ? interp(t, scope) : t;
+    }
+    if (node.nodeType !== 1) return null;
+    var tag = node.tagName.toLowerCase();
+    if (tag === 'sc-if') {
+      return value(node.getAttribute('value') || '', scope) ? kids(node, scope) : null;
+    }
+    if (tag === 'sc-for') {
+      var list = value(node.getAttribute('list') || '', scope) || [];
+      var as = node.getAttribute('as') || 'item';
+      return list.map(function (item, i) {
+        var s = Object.create(scope); s[as] = item; s.$index = i;
+        return kids(node, s);
+      });
+    }
+    if (tag === 'template' || tag === 'script' || tag === 'helmet') return null;
+    return h.apply(null, [node.namespaceURI === 'http://www.w3.org/2000/svg' ? node.tagName : tag, props(node, scope)].concat(kids(node, scope)));
+  }
+  function kids(node, scope) {
+    var out = [];
+    var src = node.content ? node.content : node;
+    for (var c = src.firstChild; c; c = c.nextSibling) out.push(build(c, scope));
+    return out;
+  }
+
+  function paint() {
+    if (!logic || !root) return;
+    if (rendering) { again = true; return; }
+    rendering = true;
+    try {
+      var vals = logic.renderVals ? logic.renderVals() : {};
+      var scope = Object.assign({}, logic.props, vals);
+      render(h('div', { 'class': 'dc-root' }, kids(tpl, scope)), root);
+    } finally { rendering = false; }
+    if (!mounted) { mounted = true; if (logic.componentDidMount) logic.componentDidMount(); }
+    else if (logic.componentDidUpdate) logic.componentDidUpdate();
+    if (again) { again = false; paint(); }
+  }
+
+  window.dcMount = function (ComponentClass, defaults, templateEl, rootEl) {
+    tpl = templateEl; root = rootEl;
+    logic = new ComponentClass(defaults || {});
+    paint();
+  };
+})();
+</script>
+<script>
+
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.caret = {};
+    this.rcache = {};
+    this.fcache = {};
+    this.KEY = 'rize-chain-rule-lesson-v4';
+    this.D = this.buildData();
+    const keys = (withU) => [
+      ['x', 'x', 0, 'x'], ['xⁿ', '^', 0, 'power'], ['( )', '()', 1, 'parentheses'], ['a⁄b', '()/()', 4, 'fraction'],
+      ['√', 'sqrt()', 1, 'square root'], ['sin', 'sin()', 1, 'sine'], ['cos', 'cos()', 1, 'cosine'], ['tan', 'tan()', 1, 'tangent'],
+      ['sec', 'sec()', 1, 'secant'], ['eˣ', 'e^()', 1, 'e to a power'], ['ln', 'ln()', 1, 'natural log'], ['π', 'pi', 0, 'pi'], ['⌫', '', 0, 'delete one character']
+    ].map((k) => (withU && k[1] === 'x' ? ['u', 'u', 0, 'u'] : k)).map((k) => ({ label: k[0], aria: k[3], press: () => this.insert(k[1], k[2]), hold: (e) => { e.preventDefault(); } }));
+    this.PAL = keys(false);
+    this.PALU = keys(true);
+    this.state = this.fresh();
+  }
+
+  fresh() {
+    return { ans: {}, res: {}, tries: {}, done: {}, active: null, hlI: 0, hlSolved: {}, hlWrong: {}, streak: {}, unl: {}, rep: {}, examOpen: false, checks: [false, false, false], sol: {}, mx: 2, fillDone: {}, mk: null, mkEdit: null, mkErr: '', rulesOpen: false };
+  }
+
+  componentDidMount() {
+    try {
+      const raw = window.localStorage.getItem(this.KEY);
+      if (raw) this.setState(Object.assign(this.fresh(), JSON.parse(raw), { active: null, rulesOpen: false, mkEdit: null, mkErr: '' }));
+    } catch (e) {}
+  }
+
+  componentDidUpdate() {
+    try {
+      const s = this.state;
+      window.localStorage.setItem(this.KEY, JSON.stringify({ ans: s.ans, res: s.res, tries: s.tries, done: s.done, hlI: s.hlI, hlSolved: s.hlSolved, streak: s.streak, unl: s.unl, rep: s.rep, examOpen: s.examOpen, checks: s.checks, sol: s.sol, mx: s.mx, fillDone: s.fillDone, mk: s.mk }));
+    } catch (e) {}
+  }
+
+  buildData() {
+    const VOC = {
+      'forgot-inside': 'You differentiated the outside and stopped. The inside changes too; multiply by its derivative.',
+      'inside-only': 'You differentiated the inside and left the outside alone.',
+      'power-on-wrong-part': 'The power belongs to the outside; bring it down in front and keep the inside intact.',
+      'sign-of-cos': 'The derivative of `cos u` is minus `sin u` times `u′`.',
+      'product-vs-chain': 'This is a product of two functions, not a function inside a function; use the product rule.',
+      'exp-not-power': 'The variable sits in the exponent, so this is not a power. The derivative of `e^u` is `e^u` itself, times `u′`.'
+    };
+    const NAMES = {
+      'forgot-inside': 'Stopping at the outside', 'inside-only': 'Dropping the outside', 'power-on-wrong-part': 'Power on the wrong part',
+      'sign-of-cos': 'The minus sign on cosine', 'product-vs-chain': 'A product read as a chain', 'exp-not-power': 'Treating an exponential as a power'
+    };
+    const REP = {
+      'forgot-inside': { f: '(2x+5)^3', ans: '6(2x+5)^2', wrongs: [['3(2x+5)^2', 'forgot-inside']], sol: 'Inside `{u = 2x + 5}`, outside `{u}«^3»`. Outside′: `«3»{u}«^2»`, which becomes `«3(»{2x + 5}«)^2»`. Inside′: `{2}`. Multiply: `6(2x + 5)^2`.' },
+      'inside-only': { f: 'sin(4x)', ans: '4cos(4x)', wrongs: [['4', 'inside-only'], ['cos(4x)', 'forgot-inside']], sol: 'Inside `{u = 4x}`, outside `«sin »{u}`. Outside′: `«cos »{u}`, which becomes `«cos(»{4x}«)»`. Inside′: `{4}`. Multiply: `4 cos(4x)`.' },
+      'power-on-wrong-part': { f: '(x^3+1)^2', ans: '6x^2(x^3+1)', wrongs: [['2(3x^2)', 'power-on-wrong-part'], ['2(x^3+1)', 'forgot-inside']], sol: 'Inside `{u = x^3 + 1}`, outside `{u}«^2»`. Outside′: `«2»{u}`, which becomes `«2(»{x^3 + 1}«)»`. Inside′: `{3x^2}`. Multiply: `6x^2(x^3 + 1)`.' },
+      'sign-of-cos': { f: 'cos(3x)', ans: '-3sin(3x)', wrongs: [['3sin(3x)', 'sign-of-cos'], ['-sin(3x)', 'forgot-inside']], sol: 'Inside `{u = 3x}`, outside `«cos »{u}`. Outside′: `«−sin »{u}`, which becomes `«−sin(»{3x}«)»`. Inside′: `{3}`. Multiply: `−3 sin(3x)`.' },
+      'product-vs-chain': { f: 'x^3 cos x', ans: '3x^2cos(x)-x^3sin(x)', wrongs: [['-3x^2sin(x)', 'product-vs-chain'], ['3x^2cos(x)+x^3sin(x)', 'sign-of-cos']], sol: 'A product of `x^3` and `cos x`. Product rule: `3x^2 cos x + x^3(−sin x) = 3x^2 cos x − x^3 sin x`.' },
+      'exp-not-power': { f: 'e^(3x)', ans: '3e^(3x)', wrongs: [['3x e^(3x-1)', 'exp-not-power'], ['e^(3x)', 'forgot-inside']], sol: 'Inside `{u = 3x}`, outside `«e»^{u}`. Outside′: `«e»^{u}` again, which becomes `«e»^{3x}`. Inside′: `{3}`. Multiply: `3e^(3x)`.' }
+    };
+    const sets = {
+      warm: [
+        { id: 'w1', label: '1', f: 'x^4', ans: '4x^3', slip: 'Bring the exponent down in front and subtract one from it.', sol: '`4x^3`. The 4 comes down in front and the exponent drops to 3.' },
+        { id: 'w2', label: '2', f: 'x^2 sin x', ans: '2x sin x + x^2 cos x', slip: 'Product rule: first times derivative of second, plus second times derivative of first.', sol: '`2x sin x + x^2 cos x`, from `(x^2)′ sin x + x^2 (sin x)′`.' },
+        { id: 'w3', label: '3', f: 'e^x', ans: 'e^x', slip: '`e^x` is its own derivative; that is what makes `e` special.', sol: '`e^x`, unchanged.' }
+      ],
+      'try': [
+        { id: 't1', label: '', f: '(3x+1)^5', ans: '15(3x+1)^4', wrongs: [['5(3x+1)^4', 'try-miss']], sol: '`15(3x + 1)^4`. Section 2 shows where the 15 comes from.' }
+      ],
+      do2: [
+        { id: 'd2a', label: '(a)', f: '(x^2+3)^4', ans: '8x(x^2+3)^3', wrongs: [['4(x^2+3)^3', 'forgot-inside'], ['4(2x)^3', 'power-on-wrong-part'], ['2x', 'inside-only']],
+          hints: ['Not yet. Start by naming the pieces: inside `{u = x^2 + 3}`, outside `{u}«^4»`.', 'Differentiate the outside, `«4»{u}«^3»`, and put the inside back: `«4(»{x^2 + 3}«)^3»`. Now multiply by the inside’s derivative.'],
+          sol: 'Inside `{u = x^2 + 3}`, outside `{u}«^4»`. Outside′: `«4»{u}«^3»`, which becomes `«4(»{x^2 + 3}«)^3»`. Inside′: `{2x}`. Multiply: `8x(x^2 + 3)^3`.' },
+        { id: 'd2b', label: '(b)', f: 'x^2 sin x', ans: '2x sin x + x^2 cos x', wrongs: [['2x cos x', 'product-vs-chain'], ['x^2 cos x', 'product-vs-chain'], ['2x cos(x^2)', 'product-vs-chain']], okMsg: 'Right. A product, so the product rule.',
+          hints: ['Not yet. Is one function inside another here, or are two functions multiplied side by side?', 'It is a product: `x^2` times `sin x`. Use the product rule: `(x^2)′ · sin x + x^2 · (sin x)′`.'],
+          sol: 'A product of `x^2` and `sin x`, with nothing inside anything. Product rule: `2x sin x + x^2 cos x`.' },
+        { id: 'd2c', label: '(c)', f: 'cos(5x-2)', ans: '-5sin(5x-2)', wrongs: [['5sin(5x-2)', 'sign-of-cos'], ['sin(5x-2)', 'sign-of-cos'], ['-sin(5x-2)', 'forgot-inside'], ['5cos(5x-2)', 'inside-only']],
+          hints: ['Not yet. Name the pieces: inside `{u = 5x − 2}`, outside `«cos »{u}`. What is the derivative of `cos u`?', 'The outside’s derivative is `«−sin »{u}`, which becomes `«−sin(»{5x − 2}«)»`. Now multiply by the inside’s derivative.'],
+          sol: 'Inside `{u = 5x − 2}`, outside `«cos »{u}`. Outside′: `«−sin »{u}`, which becomes `«−sin(»{5x − 2}«)»`. Inside′: `{5}`. Multiply: `−5 sin(5x − 2)`.' },
+        { id: 'd2d', label: '(d)', f: 'ln(x^2+4)', ans: '2x/(x^2+4)', unlock: true, wrongs: [['1/(x^2+4)', 'forgot-inside'], ['1/(2x)', 'inside-only']],
+          hints: ['Not yet. Inside `{u = x^2 + 4}`, outside `«ln »{u}`, whose derivative is `«1/»{u}`.', 'Put the inside back: `«1/(»{x^2 + 4}«)»`. Now multiply by the inside’s derivative.'],
+          sol: 'Inside `{u = x^2 + 4}`, outside `«ln »{u}`. Outside′: `«1/»{u}`, which becomes `«1/(»{x^2 + 4}«)»`. Inside′: `{2x}`. Multiply: `2x/(x^2 + 4)`.' }
+      ],
+      do3: [
+        { id: 'd3a', label: '(a)', f: 'e^(x^2+1)', ans: '2x e^(x^2+1)', wrongs: [['e^(x^2+1)', 'forgot-inside'], ['(x^2+1)e^(x^2)', 'exp-not-power'], ['e^(2x)', 'inside-only']],
+          hints: ['Not yet. Inside `{u = x^2 + 1}`, outside `«e»^{u}`. The derivative of `e^u` with respect to `u` is `e^u` itself.', 'So the outside’s derivative is `«e»^{x^2 + 1}`, unchanged. Now multiply by the inside’s derivative.'],
+          sol: 'Inside `{u = x^2 + 1}`, outside `«e»^{u}`. Outside′: `«e»^{u}`, which becomes `«e»^{x^2 + 1}`. Inside′: `{2x}`. Multiply: `2x e^(x^2 + 1)`.' },
+        { id: 'd3b', label: '(b)', f: 'tan(4x+1)', ans: '4sec^2(4x+1)', wrongs: [['sec^2(4x+1)', 'forgot-inside'], ['4sec^2(x)', 'power-on-wrong-part']],
+          hints: ['Not yet. Inside `{u = 4x + 1}`, outside `«tan »{u}`. Your rules list, at the top of the page, has the derivative of tan.', '`(tan u)′ = sec^2 u`, so the outside’s derivative becomes `«sec^2(»{4x + 1}«)»`. Now multiply by the inside’s derivative.'],
+          sol: 'Inside `{u = 4x + 1}`, outside `«tan »{u}`. Outside′: `«sec^2 »{u}`, which becomes `«sec^2(»{4x + 1}«)»`. Inside′: `{4}`. Multiply: `4 sec^2(4x + 1)`.' },
+        { id: 'd3c', label: '(c)', f: 'x^3 e^(2x^2)', ans: '3x^2 e^(2x^2) + 4x^4 e^(2x^2)', wrongs: [['3x^2e^(2x^2)+x^3e^(2x^2)', 'forgot-inside'], ['12x^3e^(2x^2)', 'product-vs-chain'], ['3x^2e^(2x^2)', 'product-vs-chain']],
+          hint: 'Look at the whole function first. It is a product: `x^3` times `e^(2x^2)`. So the outer rule is the product rule: `(x^3)′ · e^(2x^2) + x^3 · (e^(2x^2))′`. The chain rule only appears inside it, when you need `(e^(2x^2))′`. For that piece, the inside is `{2x^2}` and the outside is `«e»^{u}`.',
+          hints: ['Not yet. Look at the whole thing first: it is a product, `x^3` times `e^(2x^2)`. Start with the product rule.', 'Product rule: `3x^2 · e^(2x^2) + x^3 · (e^(2x^2))′`. That last derivative needs the chain rule, with inside `{2x^2}`.'],
+          sol: 'Product rule first: `(x^3)′ e^(2x^2) + x^3 (e^(2x^2))′`. The second piece needs the chain rule: `(e^(2x^2))′ = 4x e^(2x^2)`. Together: `3x^2 e^(2x^2) + 4x^4 e^(2x^2)`.' },
+        { id: 'd3d', label: '(d)', f: 'sqrt(ln(x^2+5))', ans: 'x/((x^2+5)sqrt(ln(x^2+5)))', unlock: true, wrongs: [['1/(2sqrt(ln(x^2+5)))', 'forgot-inside'], ['1/(2sqrt(ln(x^2+5))*(x^2+5))', 'forgot-inside']],
+          hint: 'There are two insides, so apply the chain rule twice, one layer at a time from the outside in. Outermost: the square root, `√u`, with `{u = ln(x^2 + 5)}`. Its derivative is `1/(2√u) · u′`. Then `u′` is itself a chain rule problem: the derivative of `ln(x^2 + 5)` is `2x/(x^2 + 5)`. Multiply the layers together.',
+          hints: ['Not yet. The outermost layer is the square root. Its inside is `{ln(x^2 + 5)}`, and `(√u)′ = 1/(2√u)`.', 'So far: `1/(2√(ln(x^2 + 5)))`. Multiply by the derivative of `ln(x^2 + 5)`, which needs the chain rule again and comes to `2x/(x^2 + 5)`.'],
+          sol: 'The outermost layer is the root: `«1/(2√(»{ln(x^2 + 5)}«))»`. Its inside, `ln(x^2 + 5)`, has its own inside, so its derivative is `2x/(x^2 + 5)`. Multiply and cancel the 2: `x/((x^2 + 5)√(ln(x^2 + 5)))`.' }
+      ]
+    };
+    const LABELS = ['Name the {inside}: `{u} =`', 'Write the «outside» using `{u}`', 'Differentiate the «outside»', 'Put the {inside} back in for `{u}`', 'Differentiate the {inside}', 'Multiply rows 4 and 5'];
+    const ROWHINT = [
+      'The inside is the part the outer function acts on, the part you would compute first.',
+      'Write the outer function with `u` standing where the inside was.',
+      'Differentiate row 2 with respect to `u`, exactly as you would with `x`.',
+      'Take row 3 and replace each `u` with the inside from row 1.',
+      'Differentiate row 1 by itself.',
+      'Multiply row 4 by row 5.',
+      'Substitute the given value of `x` into row 6 and simplify.'
+    ];
+    const WORKED = [
+      { id: 'we1', cap: 'Worked example 1', title: 'Find the derivative of `f(x) = (3x + 1)^5`', rows: ['`{3x + 1}`', '`{u}«^5»`', '`«5»{u}«^4»`', '`«5(»{3x + 1}«)^4»`', '`{3}`', '`«5(3x + 1)^4» · {3} = 15(3x + 1)^4`'] },
+      { id: 'we2', cap: 'Worked example 2', title: 'Find the derivative of `f(x) = sin(x^2)`', rows: ['`{x^2}`', '`«sin »{u}`', '`«cos »{u}`', '`«cos(»{x^2}«)»`', '`{2x}`', '`«cos(x^2)» · {2x} = 2x cos(x^2)`'] },
+      { id: 'we3', cap: 'Worked example 3', title: 'Find `f′(‹2›)` for `f(x) = (2x − 3)^4`', extra: 'Plug in `x = ‹2›`: `f′(‹2›) =`', rows: ['`{2x − 3}`', '`{u}«^4»`', '`«4»{u}«^3»`', '`«4(»{2x − 3}«)^3»`', '`{2}`', '`«4(2x − 3)^3» · {2} = 8(2x − 3)^3`', '`8(2 · ‹2› − 3)^3 = 8(1)^3 = 8`'] }
+    ];
+    const FILLS = {
+      sin: { id: 'fsin', cap: 'Your turn', title: 'Find the derivative of `f(x) = sin(x^3)`. Fill in and check each row, as in the worked examples.', rows: [
+        { ans: 'x^3', wrongs: [['x', 'Not yet. Sine acts on all of `x^3`, so the whole `x^3` is the inside.']] },
+        { given: '`«sin »{u}`' },
+        { ans: 'cos(u)', u: true, hint: 'The derivative of `sin u` with respect to `u` is `cos u`.', wrongs: [['-cos(u)', 'Not yet. The derivative of sine is cosine, with no minus sign.']] },
+        { ans: 'cos(x^3)', wrongs: [['cos(x)', 'Not yet. Replace `u` with the whole inside, `x^3`.'], ['cos(3x^2)', 'Not yet. Put back the inside itself, `x^3`, not its derivative.']] },
+        { ans: '3x^2', wrongs: [['x^2', 'Not yet. Power rule: the 3 comes down in front.']] },
+        { ans: '3x^2cos(x^3)', wrongs: [['cos(x^3)', 'forgot-inside'], ['3x^2', 'inside-only']] }
+      ] },
+      exp: { id: 'fexp', cap: 'Your turn', title: 'Find `f′(‹0›)` for `f(x) = e^(2x + 1)`.', extra: 'Plug in `x = ‹0›`: `f′(‹0›) =`', rows: [
+        { ans: '2x+1' },
+        { ans: 'e^u', u: true, hint: 'The outside raises `e` to a power. With `u` standing for the inside, that is `e^u`.' },
+        { ans: 'e^u', u: true, hint: '`e^u` is its own derivative with respect to `u`.' },
+        { ans: 'e^(2x+1)', wrongs: [['(2x+1)e^(2x)', 'exp-not-power']] },
+        { ans: '2', wrongs: [['2x+1', 'Not yet. That is the inside itself. Differentiate it.']] },
+        { ans: '2e^(2x+1)', wrongs: [['e^(2x+1)', 'forgot-inside']] },
+        { ans: '2e', wrongs: [['2', 'Not yet. At `x = 0`, `e^(2 · 0 + 1) = e^1 = e`, not 1.']] }
+      ] },
+      ln: { id: 'fln', cap: 'Your turn', title: 'Find the derivative of `f(x) = ln(3x^2 − 2x + 6)`.', rows: [
+        { ans: '3x^2-2x+6' },
+        { ans: 'ln(u)', u: true },
+        { ans: '1/u', u: true, hint: 'The derivative of `ln u` with respect to `u` is `1/u`.' },
+        { ans: '1/(3x^2-2x+6)', wrongs: [['1/(6x-2)', 'Not yet. Put back the inside itself, not its derivative.']] },
+        { ans: '6x-2', wrongs: [['6x', 'Not yet. The 6 at the end contributes nothing, but `−2x` contributes `−2`.']] },
+        { ans: '(6x-2)/(3x^2-2x+6)', wrongs: [['1/(3x^2-2x+6)', 'forgot-inside']] }
+      ] }
+    };
+    const MK = {
+      f: '(x^2 + 1)^3',
+      src: ['x^2+1', 'u^3', '3u^2', '3(2x)^2', '2x', '3(2x)^2*2x'],
+      disp: ['`{x^2 + 1}`', '`{u}«^3»`', '`«3»{u}«^2»`', '`3(2x)^2`', '`{2x}`', '`3(2x)^2 · 2x = 24x^3`'],
+      uv: [false, true, true, false, false, false],
+      deps: [[], [], [1], [0, 2], [0], [3, 4]],
+      ans: '6x(x^2+1)^2', row4: '3(x^2+1)^2'
+    };
+    const HL = [
+      { show: '(3x + 1)^5', disp: '«(»{3x + 1}«)^5»', ch: ['3x', 'x^5', '3x + 1', 'x'], ok: 2, inn: '3x + 1', out: 'u^5', why: { 0: 'Splitting it there leaves `(u + 1)^5` as the outside, which is still two steps. The whole `3x + 1` is computed before the power, so it is the inside.', 1: 'The 5th power applies to all of `3x + 1`, not to `x` alone. There is no `x^5` anywhere in this function.', 3: 'Splitting at `x` leaves `(3u + 1)^5` as the outside, which still contains the first step. The inside is the whole first computation, `3x + 1`.' } },
+      { show: 'sin(x^3)', disp: '«sin(»{x^3}«)»', ch: ['x', 'sin x', 'x^3', '3x^2'], ok: 2, inn: 'x^3', out: 'sin u', why: { 0: 'The cubing comes before the sine, so the inside is all of `x^3`.', 1: 'That would be the sine of `x`. Here the sine is taken of `x^3`, which you compute first.', 3: 'That is the derivative of the inside. The inside itself is `x^3`.' } },
+      { show: 'e^(2x + 1)', disp: '«e»^{2x + 1}', ch: ['2x', 'e^x', '2x + 1', 'e'], ok: 2, inn: '2x + 1', out: 'e^u', why: { 0: 'The `+1` is part of the exponent too. You finish `2x + 1` before raising `e` to it.', 1: 'That would put `x` alone in the exponent. Here the exponent is `2x + 1`, and you compute it first.', 3: '`e` is a fixed number, about 2.718. What you compute first is the exponent, `2x + 1`.' } },
+      { show: '√(x^2 + 9)', disp: '«√(»{x^2 + 9}«)»', ch: ['x + 3', 'x^2 + 9', 'x^2', '√x'], ok: 1, inn: 'x^2 + 9', out: '√u', why: { 0: '`√(x^2 + 9)` is not `x + 3`: a square root does not split across a sum. The inside is `x^2 + 9`.', 2: 'The `+9` is added before the root is taken, so the inside is all of `x^2 + 9`.', 3: 'That would be the root of `x` alone. Here the root is taken of `x^2 + 9`.' } },
+      { show: 'ln(5x − 2)', disp: '«ln(»{5x − 2}«)»', ch: ['5x', 'ln x', 'x', '5x − 2'], ok: 3, inn: '5x − 2', out: 'ln u', why: { 0: 'The `−2` happens before the logarithm too. The inside is all of `5x − 2`.', 1: 'That would be the log of `x` alone. Here the log is taken of `5x − 2`.', 2: '`x` is where you start. The inside is the whole first computation, `5x − 2`.' } },
+      { show: 'cos^2 x', disp: '«(»{cos x}«)^2»', ch: ['x', 'x^2', 'cos x', 'cos^2 x'], ok: 2, inn: 'cos x', out: 'u^2', note: '`cos^2 x` is shorthand for `(cos x)^2`. The squaring happens last, so it is the outside.', why: { 0: '`x` is inside `cos`, but the whole `cos x` is then squared; the squaring is the outside.', 1: '`cos^2 x` does not mean `cos(x^2)`. The 2 squares the cosine, not the `x`: `cos^2 x = (cos x)^2`.', 3: 'That is the whole function. The inside is the piece computed first, `cos x`, which then gets squared.' } }
+    ];
+    const FORMS = [['`(e^u)′`', '`e^u · {u′}`'], ['`(ln u)′`', '`{u′}/u`'], ['`(sin u)′`', '`cos u · {u′}`'], ['`(cos u)′`', '`−sin u · {u′}`'], ['`(tan u)′`', '`sec^2 u · {u′}`'], ['`(u^n)′`', '`n u^(n−1) · {u′}`']];
+    const BASE = [['Power', '`(x^n)′ = n x^(n−1)`'], ['Sum', '`(f + g)′ = f′ + g′`'], ['Product', '`(f g)′ = f′ g + f g′`'], ['Quotient', '`(f/g)′ = (f′ g − f g′)/g^2`'], ['Sine', '`(sin x)′ = cos x`'], ['Cosine', '`(cos x)′ = −sin x`'], ['Tangent', '`(tan x)′ = sec^2 x`'], ['Exponential', '`(e^x)′ = e^x`']];
+    const NEW = [['Chain rule', '`(«f»({g(x)}))′ = «f′»({g(x)}) · {g′(x)}`', 'chain'], ['Exponential, any inside', '`(e^u)′ = e^u · u′`', 'gen'], ['Logarithm, any inside', '`(ln u)′ = u′/u`', 'gen']];
+    return { VOC, NAMES, REP, sets, LABELS, ROWHINT, WORKED, FILLS, MK, HL, FORMS, BASE, NEW };
+  }
+
+  /* ---------- math reading: text to tree ---------- */
+  tok(src, uv) {
+    const s = String(src).replace(/[−–—]/g, '-').replace(/[·×∙⋅]/g, '*').replace(/÷/g, '/').replace(/π/g, 'pi').replace(/√/g, 'sqrt').replace(/²/g, '^2').replace(/³/g, '^3').replace(/⁴/g, '^4').replace(/\*\*/g, '^').replace(/[\[{]/g, '(').replace(/[\]}]/g, ')').toLowerCase();
+    const W = ['sqrt', 'sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'exp', 'abs', 'ln', 'log', 'pi'];
+    const vname = uv ? 'u' : 'x';
+    const out = [];
+    let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (c === ' ' || c === '\t') { i++; continue; }
+      if (/[0-9.]/.test(c)) {
+        let j = i;
+        while (j < s.length && /[0-9.]/.test(s[j])) j++;
+        const t = s.slice(i, j);
+        if (t === '.' || (t.match(/\./g) || []).length > 1) return { err: 'The number “' + t + '” has a stray decimal point.' };
+        out.push({ t: 'num', v: parseFloat(t) });
+        i = j;
+        continue;
+      }
+      if (/[a-z]/.test(c)) {
+        const w = W.find((k) => s.startsWith(k, i));
+        if (w) { i += w.length; if (w === 'pi') out.push({ t: 'pi' }); else out.push({ t: 'fn', v: w === 'log' ? 'ln' : w }); continue; }
+        if (c === vname) { out.push({ t: 'x' }); i++; continue; }
+        if (c === 'e') { out.push({ t: 'e' }); i++; continue; }
+        if (uv && c === 'x') return { err: 'Write this row using u, not x. Here u stands for the whole inside.' };
+        return { err: 'This box uses ' + vname + ' as its only variable, so “' + c + '” is not something it can read.' };
+      }
+      if ('+-*/^()'.indexOf(c) >= 0) { out.push({ t: c }); i++; continue; }
+      return { err: 'The symbol “' + c + '” is not something this box can read.' };
+    }
+    return { toks: out };
+  }
+
+  parse(src, uv) {
+    if (!src || !String(src).trim()) return { empty: true };
+    const r = this.tok(src, uv);
+    if (r.err) return { err: r.err };
+    const T = r.toks;
+    let i = 0;
+    const peek = () => T[i];
+    const isF = (t) => !!t && (t.t === 'num' || t.t === 'x' || t.t === 'e' || t.t === 'pi' || t.t === 'fn' || t.t === '(');
+    const show = (t) => (t.t === 'fn' ? t.v : t.t === 'num' ? String(t.v) : t.t === 'x' ? (uv ? 'u' : 'x') : t.t);
+    const fail = (m) => { throw new Error(m); };
+    const B = (k, a, b) => ({ k, a, b });
+    let expr, term, unary, power, primary;
+    expr = () => {
+      let a = term();
+      while (peek() && (peek().t === '+' || peek().t === '-')) { const op = T[i++].t; a = B(op, a, term()); }
+      return a;
+    };
+    term = () => {
+      let a = unary();
+      for (;;) {
+        const t = peek();
+        if (t && (t.t === '*' || t.t === '/')) { i++; a = B(t.t, a, unary()); }
+        else if (isF(t)) a = B('*', a, power());
+        else break;
+      }
+      return a;
+    };
+    unary = () => {
+      const t = peek();
+      if (t && t.t === '-') { i++; return { k: 'neg', a: unary() }; }
+      if (t && t.t === '+') { i++; return unary(); }
+      return power();
+    };
+    power = () => {
+      const b = primary();
+      if (peek() && peek().t === '^') {
+        i++;
+        let e;
+        if (peek() && peek().t === '-') { i++; e = { k: 'neg', a: power() }; } else e = power();
+        return B('^', b, e);
+      }
+      return b;
+    };
+    primary = () => {
+      const t = T[i];
+      if (!t) fail('The expression ends too soon. Something is missing at the end.');
+      if (t.t === 'num') { i++; return { k: 'n', v: t.v }; }
+      if (t.t === 'x') { i++; return { k: 'v' }; }
+      if (t.t === 'e') { i++; return { k: 'c', name: 'e', v: Math.E }; }
+      if (t.t === 'pi') { i++; return { k: 'c', name: 'pi', v: Math.PI }; }
+      if (t.t === '(') {
+        i++;
+        if (peek() && peek().t === ')') fail('There is an empty pair of parentheses.');
+        const a = expr();
+        if (!peek()) fail('A parenthesis is still open. Close it with “)”.');
+        if (peek().t !== ')') fail('Something is out of place near “' + show(peek()) + '”.');
+        i++;
+        return a;
+      }
+      if (t.t === 'fn') {
+        i++;
+        let fe = null;
+        if (peek() && peek().t === '^') { i++; fe = primary(); }
+        let arg;
+        if (peek() && peek().t === '(') arg = primary();
+        else {
+          if (!peek() || !isF(peek()) || peek().t === 'fn') fail(t.v + ' needs something to act on, such as ' + t.v + '(' + (uv ? 'u' : 'x') + ').');
+          arg = power();
+          while (peek() && isF(peek()) && peek().t !== 'fn' && peek().t !== '(') arg = B('*', arg, power());
+        }
+        const g = { k: 'f', name: t.v, a: arg };
+        return fe ? B('^', g, fe) : g;
+      }
+      if (t.t === ')') fail('There is a “)” without a matching “(”.');
+      fail('Something is out of place near “' + show(t) + '”.');
+    };
+    try {
+      const ast = expr();
+      if (i < T.length) {
+        const t = T[i];
+        if (t.t === ')') fail('There is a “)” without a matching “(”.');
+        fail('Something is out of place near “' + show(t) + '”.');
+      }
+      return { ast };
+    } catch (e) {
+      return { err: e.message };
+    }
+  }
+
+  ev(n, x) {
+    switch (n.k) {
+      case 'n': case 'c': return n.v;
+      case 'v': return x;
+      case '+': return this.ev(n.a, x) + this.ev(n.b, x);
+      case '-': return this.ev(n.a, x) - this.ev(n.b, x);
+      case '*': return this.ev(n.a, x) * this.ev(n.b, x);
+      case '/': return this.ev(n.a, x) / this.ev(n.b, x);
+      case '^': return Math.pow(this.ev(n.a, x), this.ev(n.b, x));
+      case 'neg': return -this.ev(n.a, x);
+      case 'f': {
+        const v = this.ev(n.a, x);
+        const F = { sin: Math.sin, cos: Math.cos, tan: Math.tan, sec: (q) => 1 / Math.cos(q), csc: (q) => 1 / Math.sin(q), cot: (q) => 1 / Math.tan(q), exp: Math.exp, abs: Math.abs, ln: Math.log, sqrt: Math.sqrt };
+        return F[n.name](v);
+      }
+    }
+    return NaN;
+  }
+
+  compile(src, uv) {
+    const p = this.parse(src, uv);
+    if (p.empty) return { empty: true };
+    if (p.err) return { err: p.err };
+    const ast = p.ast;
+    return { f: (x) => this.ev(ast, x), ast };
+  }
+
+  cf(s, uv) {
+    const k = (uv ? 'u:' : 'x:') + s;
+    if (!(k in this.fcache)) { const c = this.compile(s, uv); this.fcache[k] = c.f || null; }
+    return this.fcache[k];
+  }
+
+  same(f, g) {
+    if (!f || !g) return false;
+    const P = [-2.3, -1.45, -0.75, -0.2, 0.35, 0.8, 1.3, 1.9, 2.6, 3.4];
+    let n = 0;
+    for (let k = 0; k < P.length; k++) {
+      const a = g(P[k]);
+      if (!isFinite(a)) continue;
+      const b = f(P[k]);
+      if (!isFinite(b)) return false;
+      if (Math.abs(a - b) > 1e-6 * Math.max(1, Math.abs(a), Math.abs(b))) return false;
+      n++;
+    }
+    return n >= 3;
+  }
+
+  /* ---------- a small symbolic engine for the find-the-mistake card ---------- */
+  N(v) { return { k: 'n', v }; }
+  isN(n, v) { return n.k === 'n' && (v === undefined || Math.abs(n.v - v) < 1e-12); }
+  hasVar(n) { if (n.k === 'v') return true; return !!((n.a && this.hasVar(n.a)) || (n.b && this.hasVar(n.b))); }
+  diff(n) {
+    const d = (m) => this.diff(m);
+    const B = (k, a, b) => ({ k, a, b });
+    const F = (name, a) => ({ k: 'f', name, a });
+    switch (n.k) {
+      case 'n': case 'c': return this.N(0);
+      case 'v': return this.N(1);
+      case '+': case '-': return B(n.k, d(n.a), d(n.b));
+      case 'neg': return { k: 'neg', a: d(n.a) };
+      case '*': return B('+', B('*', d(n.a), n.b), B('*', n.a, d(n.b)));
+      case '/': return B('/', B('-', B('*', d(n.a), n.b), B('*', n.a, d(n.b))), B('^', n.b, this.N(2)));
+      case '^':
+        if (!this.hasVar(n.b)) return B('*', B('*', n.b, B('^', n.a, B('-', n.b, this.N(1)))), d(n.a));
+        if (!this.hasVar(n.a)) return B('*', n.a.k === 'c' && n.a.name === 'e' ? n : B('*', n, F('ln', n.a)), d(n.b));
+        return B('*', n, B('+', B('*', d(n.b), F('ln', n.a)), B('/', B('*', n.b, d(n.a)), n.a)));
+      case 'f': {
+        const a = n.a, da = d(a);
+        const G = {
+          sin: () => F('cos', a), cos: () => ({ k: 'neg', a: F('sin', a) }), tan: () => B('^', F('sec', a), this.N(2)),
+          sec: () => B('*', F('sec', a), F('tan', a)), exp: () => F('exp', a),
+          ln: () => B('/', this.N(1), a), sqrt: () => B('/', this.N(1), B('*', this.N(2), F('sqrt', a)))
+        };
+        if (!G[n.name]) return null;
+        return B('*', G[n.name](), da);
+      }
+    }
+    return null;
+  }
+  hasNull(n) { if (!n) return true; return !!((n.a !== undefined && n.a !== null && this.hasNull(n.a)) || (n.a === null) || (n.b === null) || (n.b && this.hasNull(n.b))); }
+  simp(n) {
+    if (!n) return n;
+    const S = (m) => this.simp(m);
+    const B = (k, a, b) => ({ k, a, b });
+    if (n.k === 'f') return { k: 'f', name: n.name, a: S(n.a) };
+    if (n.k === 'neg') { const a = S(n.a); if (a.k === 'n') return this.N(-a.v); if (a.k === 'neg') return a.a; return { k: 'neg', a }; }
+    if (!n.b) return n;
+    const a = S(n.a), b = S(n.b);
+    switch (n.k) {
+      case '+':
+        if (this.isN(a, 0)) return b; if (this.isN(b, 0)) return a;
+        if (a.k === 'n' && b.k === 'n') return this.N(a.v + b.v);
+        if (b.k === 'neg') return B('-', a, b.a);
+        if (b.k === 'n' && b.v < 0) return B('-', a, this.N(-b.v));
+        return B('+', a, b);
+      case '-':
+        if (this.isN(b, 0)) return a; if (this.isN(a, 0)) return S({ k: 'neg', a: b });
+        if (a.k === 'n' && b.k === 'n') return this.N(a.v - b.v);
+        return B('-', a, b);
+      case '*':
+        if (this.isN(a, 0) || this.isN(b, 0)) return this.N(0);
+        if (this.isN(a, 1)) return b; if (this.isN(b, 1)) return a;
+        if (a.k === 'n' && b.k === 'n') return this.N(a.v * b.v);
+        if (a.k === 'neg') return S({ k: 'neg', a: B('*', a.a, b) });
+        if (b.k === 'neg') return S({ k: 'neg', a: B('*', a, b.a) });
+        if (b.k === 'n' && a.k !== 'n') return S(B('*', b, a));
+        if (a.k === 'n' && b.k === '*' && b.a.k === 'n') return S(B('*', this.N(a.v * b.a.v), b.b));
+        if (a.k === 'n' && a.v < 0) return { k: 'neg', a: S(B('*', this.N(-a.v), b)) };
+        return B('*', a, b);
+      case '/':
+        if (this.isN(b, 1)) return a; if (this.isN(a, 0)) return this.N(0);
+        if (a.k === 'n' && b.k === 'n') return this.N(a.v / b.v);
+        return B('/', a, b);
+      case '^':
+        if (this.isN(b, 1)) return a; if (this.isN(b, 0)) return this.N(1);
+        if (a.k === 'n' && b.k === 'n') return this.N(Math.pow(a.v, b.v));
+        return B('^', a, b);
+    }
+    return B(n.k, a, b);
+  }
+  subst(n, r) {
+    if (n.k === 'v') return r;
+    const o = Object.assign({}, n);
+    if (n.a) o.a = this.subst(n.a, r);
+    if (n.b) o.b = this.subst(n.b, r);
+    return o;
+  }
+  fnum(v) {
+    if (Number.isInteger(v)) return String(v);
+    for (let q = 2; q <= 12; q++) { const p = v * q; if (Math.abs(p - Math.round(p)) < 1e-9) return Math.round(p) + '/' + q; }
+    return String(Math.round(v * 1000) / 1000);
+  }
+  pr(n, vn) {
+    const P = (m) => this.pr(m, vn);
+    const wrap = (r, need) => (r.p < need ? '(' + r.s + ')' : r.s);
+    switch (n.k) {
+      case 'n': return n.v < 0 ? { s: '-' + this.fnum(-n.v), p: 3 } : { s: this.fnum(n.v), p: (Number.isInteger(n.v) ? 5 : 2) };
+      case 'c': return { s: n.name, p: 5 };
+      case 'v': return { s: vn, p: 5 };
+      case 'f': return { s: n.name + '(' + P(n.a).s + ')', p: 5 };
+      case 'neg': return { s: '-' + wrap(P(n.a), 2), p: 3 };
+      case '+': return { s: P(n.a).s + ' + ' + wrap(P(n.b), 2), p: 1 };
+      case '-': return { s: P(n.a).s + ' - ' + wrap(P(n.b), 2), p: 1 };
+      case '*': {
+        const l = P(n.a), r = P(n.b);
+        const implicit = n.a.k === 'n' && n.b.k !== 'n' && r.p >= 2 && !/^[0-9]/.test(r.s);
+        return { s: wrap(l, 2) + (implicit ? '' : ' * ') + wrap(r, 2), p: 2 };
+      }
+      case '/': return { s: wrap(P(n.a), 2) + '/' + wrap(P(n.b), 3), p: 2 };
+      case '^': {
+        if (n.a.k === 'f' && n.b.k === 'n' && Number.isInteger(n.b.v) && n.b.v > 0) return { s: n.a.name + '^' + n.b.v + '(' + P(n.a.a).s + ')', p: 5 };
+        const base = P(n.a), ex = P(n.b);
+        const simpleEx = (n.b.k === 'n' && Number.isInteger(n.b.v) && n.b.v >= 0) || n.b.k === 'v' || n.b.k === 'c';
+        return { s: wrap(base, 5) + '^' + (simpleEx ? ex.s : '(' + ex.s + ')'), p: 4 };
+      }
+    }
+    return { s: '?', p: 5 };
+  }
+
+  judge(it, raw) {
+    let val = String(raw || '');
+    if (val.indexOf('=') >= 0) val = val.slice(val.lastIndexOf('=') + 1);
+    if (!val.trim() || /^\s*(idk|i ?d[o']?n'?t ?know|i dont know|dunno|no idea|not sure|stuck|help|\?+)\s*$/i.test(val)) return { st: 'stuck' };
+    const uv = !!it.u;
+    const c = this.compile(val, uv);
+    if (c.err) return { st: 'err', msg: c.err };
+    const g = this.cf(it.ans, uv);
+    if (this.same(c.f, g)) return { st: 'ok' };
+    const W = it.wrongs || [];
+    for (let k = 0; k < W.length; k++) {
+      const w = this.cf(W[k][0], uv);
+      if (w && this.same(c.f, w)) {
+        const t = W[k][1];
+        return { st: 'slip', tag: this.D.VOC[t] ? t : null, key: t, msg: this.D.VOC[t] || t };
+      }
+    }
+    if (it.f) { const o = this.cf(it.f, uv); if (o && this.same(c.f, o)) return { st: 'no', msg: 'That is the original function, unchanged. Differentiate it.' }; }
+    return { st: 'no', msg: '' };
+  }
+
+  /* ---------- typesetting ---------- */
+  supFlat(g) {
+    const SUP = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹', '-': '⁻' };
+    let s = String(g).replace(/sqrt/g, '√').replace(/pi/g, 'π').replace(/\*/g, '·');
+    s = s.replace(/\^\(?(-?[0-9]+)\)?/g, (m, d) => d.split('').map((c) => SUP[c] || c).join(''));
+    s = s.replace(/\s*-\s*/g, (m, off) => (off === 0 ? '−' : ' − ')).replace(/\s*\+\s*/g, ' + ');
+    return s;
+  }
+
+  supSegs(g, R, out) {
+    const s = this.supFlat(g);
+    const parts = s.match(/[a-zA-Z]+|[^a-zA-Z]+/g) || [];
+    parts.forEach((p) => out.push({ s: p, cls: 'ms' + (/^[a-zA-Z]$/.test(p) ? ' msv' : '') + R, sup: true, nsup: false }));
+  }
+
+  chunks(s) {
+    const out = [];
+    let cur = '', role = '', sup = false;
+    const flush = () => { if (cur) out.push([cur, role, sup]); cur = ''; };
+    let keep = null;
+    for (const c of s) {
+      if (c === '‹') { flush(); keep = [role, sup]; role = (role ? role + ' ' : '') + 'k'; continue; }
+      if (c === '›') { flush(); if (keep) { role = keep[0]; sup = keep[1]; keep = null; } continue; }
+      if (c === '{' || c === '«') {
+        let ns = false;
+        if (cur.endsWith('^')) { cur = cur.slice(0, -1); ns = true; }
+        flush(); role = c === '{' ? 'in' : 'out'; sup = ns;
+      } else if (c === '}' || c === '»') { flush(); role = ''; sup = false; }
+      else cur += c;
+    }
+    flush();
+    return out;
+  }
+
+  pm(s, role, out, ctx) {
+    const W = ['sqrt', 'sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'exp', 'ln', 'log', 'pi', 'let'];
+    const R = role ? ' ' + role : '';
+    const push = (k, txt, opd) => {
+      if (ctx.sp && ctx.prev === 'opd' && opd) out.push({ s: ' ', cls: 'mn' + R, sup: false, nsup: true });
+      ctx.sp = false;
+      out.push({ s: txt, cls: k + R, sup: false, nsup: true });
+    };
+    let i = 0;
+    while (i < s.length) {
+      const c = s[i];
+      if (c === ' ') { ctx.sp = true; i++; continue; }
+      if (c === '^') {
+        i++;
+        let g = '';
+        if (s[i] === '(') {
+          let d = 0, j = i;
+          for (; j < s.length; j++) { if (s[j] === '(') d++; else if (s[j] === ')') { d--; if (d === 0) break; } }
+          g = s.slice(i + 1, j); i = j + 1;
+        } else {
+          let j = i;
+          if (s[j] === '-' || s[j] === '−') j++;
+          if (/[0-9.]/.test(s[j] || '')) { while (j < s.length && /[0-9.]/.test(s[j])) j++; }
+          else if (/[a-zA-Z]/.test(s[j] || '')) { const w = W.find((k) => s.startsWith(k, j)); j += w ? w.length : 1; }
+          else if (j < s.length) j++;
+          g = s.slice(i, j); i = j;
+        }
+        this.supSegs(g, R, out);
+        ctx.prev = 'opd'; ctx.sp = false;
+        continue;
+      }
+      if (/[0-9.]/.test(c)) {
+        let j = i;
+        while (j < s.length && /[0-9.]/.test(s[j])) j++;
+        push('mn', s.slice(i, j), true); i = j; ctx.prev = 'opd';
+        continue;
+      }
+      if (/[a-zA-Z]/.test(c)) {
+        const w = W.find((k) => s.startsWith(k, i));
+        if (w) {
+          i += w.length;
+          if (w === 'pi') { push('mn', 'π', true); ctx.prev = 'opd'; }
+          else if (w === 'sqrt') { push('mn', '√', true); ctx.prev = 'op'; }
+          else if (w === 'let') { push('mf', 'let ', true); ctx.prev = 'op'; }
+          else { const nx = s[i]; push('mf', w + ((nx === '(' || nx === '^') ? '' : ' '), true); ctx.prev = 'op'; }
+          continue;
+        }
+        push('mv', c, true); i++; ctx.prev = 'opd';
+        continue;
+      }
+      if (c === '*' || c === '·') { push('mo', ' · ', false); i++; ctx.prev = 'op'; continue; }
+      if (c === '×') { push('mo', ' × ', false); i++; ctx.prev = 'op'; continue; }
+      if (c === '+') { push('mo', ctx.prev === 'opd' ? ' + ' : '+', false); i++; ctx.prev = 'op'; continue; }
+      if (c === '-' || c === '−') { push('mo', ctx.prev === 'opd' ? ' − ' : '−', false); i++; ctx.prev = 'op'; continue; }
+      if (c === '=' || c === '>' || c === '<') { push('mo eq', ' ' + c + ' ', false); i++; ctx.prev = 'op'; continue; }
+      if (c === '(') { push('mn', '(', true); i++; ctx.prev = 'op'; continue; }
+      if (c === ')') { push('mn', ')', false); i++; ctx.prev = 'opd'; continue; }
+      if (c === '/') { push('mn', '/', false); i++; ctx.prev = 'op'; continue; }
+      if (c === '\'' || c === '′') { push('mn', '′', false); i++; ctx.prev = 'opd'; continue; }
+      if (c === '√') { push('mn', '√', true); i++; ctx.prev = 'op'; continue; }
+      push('mn', c, false); i++; ctx.prev = 'opd';
+    }
+  }
+
+  rich(t) {
+    if (!t) return [];
+    if (this.rcache[t]) return this.rcache[t];
+    const out = [];
+    const ctx = { prev: '', sp: false };
+    String(t).split('`').forEach((part, k) => {
+      if (!part) return;
+      const ch = this.chunks(part);
+      if (k % 2 === 0) {
+        ch.forEach((c) => {
+          const R = c[1] ? ' ' + c[1] : '';
+          c[0].split('*').forEach((bit, j) => { if (bit) out.push({ s: bit, cls: (j % 2 ? 'pr em' : 'pr') + R, sup: false, nsup: true }); });
+        });
+        ctx.prev = ''; ctx.sp = false;
+      } else {
+        ch.forEach((c) => {
+          if (c[2]) { this.supSegs(c[0], c[1] ? ' ' + c[1] : '', out); ctx.prev = 'opd'; }
+          else this.pm(c[0], c[1], out, ctx);
+        });
+      }
+    });
+    this.rcache[t] = out;
+    return out;
+  }
+
+  /* ---------- input plumbing ---------- */
+  setAns(id, v) {
+    const ans = Object.assign({}, this.state.ans); ans[id] = v;
+    const res = Object.assign({}, this.state.res);
+    if (res[id] && (res[id].st === 'ok' || res[id].st === 'err')) delete res[id];
+    this.setState({ ans, res });
+  }
+
+  insert(ins, back) {
+    const id = this.state.active;
+    if (!id) return;
+    const v = this.state.ans[id] || '';
+    let pos = this.caret[id];
+    if (pos == null || pos > v.length) pos = v.length;
+    let nv, np;
+    if (!ins) { if (pos === 0) return; nv = v.slice(0, pos - 1) + v.slice(pos); np = pos - 1; }
+    else { nv = v.slice(0, pos) + ins + v.slice(pos); np = pos + ins.length - (back || 0); }
+    this.caret[id] = np;
+    this.setAns(id, nv);
+    setTimeout(() => { const el = document.getElementById(id); if (el) { try { el.focus(); el.setSelectionRange(np, np); } catch (e) {} } }, 0);
+  }
+
+  io(id, onEnter) {
+    return {
+      val: this.state.ans[id] || '',
+      change: (e) => { this.caret[id] = e.target.selectionStart; this.setAns(id, e.target.value); },
+      focus: () => { if (this.state.active !== id) this.setState({ active: id }); },
+      sel: (e) => { this.caret[id] = e.target.selectionStart; },
+      key: (e) => { if (e.key === 'Enter') { e.preventDefault(); onEnter(); } }
+    };
+  }
+
+  clean(v) { return String(v).replace(/[{}«»`*]/g, (c) => (c === '{' ? '(' : c === '}' ? ')' : c === '*' ? '·' : '')); }
+
+  feedback(id, val, uv) {
+    const r = this.state.res[id];
+    const fb = r ? { fb: this.rich(r.msg), fbCls: 'fb-' + r.st } : { fb: [], fbCls: '' };
+    let pv = [];
+    const v = String(val || '');
+    if (v.trim() && !(r && r.st === 'ok')) {
+      const body = v.indexOf('=') >= 0 ? v.slice(v.lastIndexOf('=') + 1) : v;
+      const c = this.compile(body, uv);
+      if (!c.err && !c.empty) {
+        let warn = '';
+        if (/\^-?[0-9.]+[a-z(]/i.test(body) || /\^[a-z][a-z0-9(]/i.test(body)) warn = ' The exponent stops after its first number or letter; use parentheses to put more in it.';
+        pv = this.rich('Reads as `' + this.clean(body) + '`.' + warn);
+      }
+    }
+    return Object.assign(fb, { pv, hasPv: pv.length > 0 });
+  }
+
+  /* ---------- checking ---------- */
+  checkProb(it, mode, setKey) {
+    const S = this.state;
+    const id = 'in-' + it.id;
+    const r = this.judge(it, S.ans[id] || '');
+    const res = Object.assign({}, S.res), tries = Object.assign({}, S.tries), done = Object.assign({}, S.done), streak = Object.assign({}, S.streak), unl = Object.assign({}, S.unl), rep = Object.assign({}, S.rep);
+    let msg = r.msg || '', st = r.st;
+    if (r.st !== 'ok' && r.st !== 'err') tries[id] = (tries[id] || 0) + 1;
+    if (mode === 'warm') {
+      if (r.st === 'ok') { msg = 'Right.'; done[id] = true; }
+      else if (r.st !== 'err') { msg = it.slip; st = r.st === 'stuck' ? 'stuck' : 'no'; }
+    } else if (mode === 'try') {
+      if (r.st === 'ok') { msg = 'Right. That 15 out front is what this page is about. Section 2 shows where it comes from.'; done[id] = true; }
+      else if (r.st === 'slip') { msg = 'Most people write this. Something is missing, and the rest of this page is about what.'; st = 'no'; }
+      else if (r.st === 'stuck') { msg = 'That is fine. Section 2 shows how to do this one.'; }
+      else if (r.st === 'no') { msg = 'Not this one, which is fine for now. Hold on to your answer; Section 2 shows what this derivative needs.'; }
+    } else {
+      if (r.st === 'ok') {
+        msg = it.okMsg || 'Right.';
+        if (!done[id]) { done[id] = true; streak[setKey] = (streak[setKey] || 0) + 1; }
+      } else if (r.st === 'slip' && r.tag) {
+        msg = this.D.VOC[r.tag] + ' The card below works through it.';
+        streak[setKey] = 0;
+        rep[it.id] = r.tag;
+      } else if (r.st !== 'err') {
+        streak[setKey] = 0;
+        if (!msg) {
+          const h = it.hints || [];
+          msg = h.length ? h[Math.min(tries[id] - 1, h.length - 1)] : 'Not yet.';
+          if (r.st === 'stuck') msg = msg.replace(/^Not yet\. /, '');
+        }
+        if (r.st !== 'stuck') st = 'no';
+      }
+      const base = this.D.sets[setKey].filter((x) => !x.unlock);
+      if ((streak[setKey] || 0) >= 2 || base.every((x) => done['in-' + x.id])) unl[setKey] = true;
+    }
+    res[id] = { st, msg };
+    this.setState({ res, tries, done, streak, unl, rep });
+  }
+
+  checkRep(it) {
+    const S = this.state;
+    const rp = this.D.REP[S.rep[it.id]];
+    const id = 'rep-' + it.id;
+    const r = this.judge(rp, S.ans[id] || '');
+    const res = Object.assign({}, S.res), tries = Object.assign({}, S.tries), done = Object.assign({}, S.done);
+    let msg = r.msg || '', st = r.st === 'slip' ? 'no' : r.st;
+    if (r.st === 'ok') { msg = 'Right. Same kind of problem, handled correctly this time.'; done[id] = true; }
+    else if (r.st !== 'err') { tries[id] = (tries[id] || 0) + 1; if (!msg) msg = (r.st === 'stuck' ? '' : 'Not yet. ') + 'Follow the same steps as the solution just above: name the inside and outside, differentiate the outside, put the inside back, multiply by the inside’s derivative.'; }
+    res[id] = { st, msg };
+    this.setState({ res, tries, done });
+  }
+
+  checkRow(fi, k) {
+    const S = this.state;
+    const row = fi.rows[k];
+    const id = 'fb-' + fi.id + '-' + k;
+    const r = this.judge(row, S.ans[id] || '');
+    const res = Object.assign({}, S.res), tries = Object.assign({}, S.tries);
+    const hint = row.hint || this.D.ROWHINT[Math.min(k, 6)];
+    let msg, st = r.st;
+    if (r.st === 'ok') msg = 'Right.';
+    else if (r.st === 'err') msg = r.msg;
+    else if (r.st === 'stuck') msg = hint;
+    else { st = 'no'; msg = r.msg || ('Not yet. ' + hint); }
+    if (r.st !== 'ok' && r.st !== 'err') tries[id] = (tries[id] || 0) + 1;
+    res[id] = { st, msg };
+    const fillDone = Object.assign({}, S.fillDone);
+    if (fi.rows.every((rw, j) => rw.given || (j === k ? r.st === 'ok' : (res['fb-' + fi.id + '-' + j] && res['fb-' + fi.id + '-' + j].st === 'ok')))) fillDone[fi.id] = true;
+    this.setState({ res, tries, fillDone });
+    if (r.st === 'ok') setTimeout(() => { const nx = document.getElementById('fb-' + fi.id + '-' + (k + 1)) || document.getElementById('fb-' + fi.id + '-' + (k + 2)); if (nx && !nx.value) { try { nx.focus(); } catch (e) {} } }, 0);
+  }
+
+  showRow(fi, k) {
+    const id = 'fb-' + fi.id + '-' + k;
+    const ans = Object.assign({}, this.state.ans); ans[id] = fi.rows[k].ans;
+    const res = Object.assign({}, this.state.res); res[id] = { st: 'ok', msg: 'Here is this row. Compare it with the hint before moving on.' };
+    this.setState({ ans, res });
+  }
+
+  /* ---------- views ---------- */
+  probView(it, mode, setKey) {
+    const S = this.state;
+    const id = 'in-' + it.id;
+    const tries = S.tries[id] || 0;
+    const locked = !!it.unlock && !S.unl[setKey];
+    const fb = this.feedback(id, S.ans[id] || '', false);
+    const hasRep = !!S.rep[it.id];
+    const need = mode === 'do' ? 2 : 1;
+    const v = Object.assign({
+      id, anchor: 'p-' + it.id, label: it.label || '', hasLabel: !!it.label, task: 'Find the derivative of',
+      prompt: this.rich('`f(x) = ' + it.f + '`'),
+      cls: (S.done[id] ? 'is-done' : '') + (locked ? ' is-locked' : ''),
+      locked, open: !locked, lockText: 'Opens after two right in a row.',
+      hasHint: !!it.hint, hint: this.rich(it.hint || ''),
+      aria: 'Your derivative of f(x) = ' + it.f, keys: this.PAL,
+      showPal: S.active === id,
+      canReveal: !S.sol[id] && !hasRep && !S.done[id] && tries >= need,
+      revealLabel: mode === 'warm' ? 'Show the answer' : 'Show the solution',
+      reveal: () => { const sol = Object.assign({}, this.state.sol); sol[id] = true; this.setState({ sol }); },
+      showSol: !!S.sol[id] && !hasRep, sol: this.rich(it.sol),
+      check: () => this.checkProb(it, mode, setKey),
+      hasRep, repName: '', repDiag: [], rp: {}
+    }, fb, this.io(id, () => this.checkProb(it, mode, setKey)));
+    if (hasRep) {
+      const tag = S.rep[it.id];
+      const rp = this.D.REP[tag];
+      const rid = 'rep-' + it.id;
+      v.repName = 'Slip: ' + this.D.NAMES[tag];
+      v.repDiag = this.rich(this.D.VOC[tag]);
+      v.rp = Object.assign({
+        id: rid, prompt: this.rich('`f(x) = ' + rp.f + '`'), aria: 'Your derivative of f(x) = ' + rp.f,
+        showPal: S.active === rid,
+        check: () => this.checkRep(it),
+        canReveal: !S.sol[rid] && !S.done[rid] && (S.tries[rid] || 0) >= 1,
+        reveal: () => { const sol = Object.assign({}, this.state.sol); sol[rid] = true; this.setState({ sol }); },
+        showSol: !!S.sol[rid], sol: this.rich(rp.sol)
+      }, this.feedback(rid, S.ans[rid] || '', false), this.io(rid, () => this.checkRep(it)));
+    }
+    return v;
+  }
+
+  rowBase(k, extra) {
+    const label = k < 6 ? this.D.LABELS[k] : (extra || '');
+    return { n: k + 1, label: this.rich(label), id: '', cls: '', boxCls: '', isShown: false, isGiven: false, isInput: false, show: [] };
+  }
+
+  workedCard(w) {
+    return {
+      isCard: true, anchor: w.id, cap: w.cap, title: this.rich(w.title),
+      rows: w.rows.map((t, k) => Object.assign(this.rowBase(k, w.extra), { isShown: true, show: this.rich(t) }))
+    };
+  }
+
+  fillCard(fi) {
+    const S = this.state;
+    const rows = fi.rows.map((row, k) => {
+      if (row.given) return Object.assign(this.rowBase(k, fi.extra), { isShown: true, isGiven: true, boxCls: 'given', show: this.rich(row.given) });
+      const id = 'fb-' + fi.id + '-' + k;
+      const r = S.res[id];
+      const ok = !!(r && r.st === 'ok');
+      return Object.assign(this.rowBase(k, fi.extra), {
+        id, isInput: true, showPal: S.active === id, keys: row.u ? this.PALU : this.PAL,
+        cls: ok ? 'ok' : '', mark: ok ? '✓' : '',
+        check: () => this.checkRow(fi, k),
+        canShow: !ok && (S.tries[id] || 0) >= 2, showAns: () => this.showRow(fi, k)
+      }, this.feedback(id, S.ans[id] || '', !!row.u), this.io(id, () => this.checkRow(fi, k)));
+    });
+    return { isCard: true, anchor: 'p-' + fi.id, cap: fi.cap, title: this.rich(fi.title), rows };
+  }
+
+  /* find the mistake: rows recompute from one another */
+  mkRows() {
+    const M = this.D.MK;
+    return this.state.mk || M.src.map((s, k) => ({ src: s, disp: M.disp[k], tag: '' }));
+  }
+
+  mkEvaluate(k) {
+    const M = this.D.MK;
+    const text = String(this.state.ans['mk-edit'] || '').trim();
+    const c = this.parse(text, M.uv[k]);
+    if (c.empty || c.err) { this.setState({ mkErr: c.err || 'Type the corrected row first.' }); return; }
+    const rows = this.mkRows().map((r) => Object.assign({}, r));
+    rows[k] = { src: text, disp: '`' + this.clean(text) + '`', tag: 'Edited' };
+    const changed = new Set([k]);
+    const A = (j) => this.parse(rows[j].src, M.uv[j]).ast;
+    const set = (j, ast, vn) => {
+      if (!ast || this.hasNull(ast)) { rows[j] = { src: rows[j].src, disp: rows[j].disp, tag: rows[j].tag }; return; }
+      const s = this.pr(ast, vn).s;
+      rows[j] = { src: s, disp: '`' + s + '`', tag: 'Updated from your edit' };
+      changed.add(j);
+    };
+    for (let j = k + 1; j < 6; j++) {
+      if (!M.deps[j].some((d) => changed.has(d))) continue;
+      try {
+        if (j === 2) set(2, this.simp(this.diff(A(1))), 'u');
+        if (j === 3) set(3, this.simp(this.subst(A(2), A(0))), 'x');
+        if (j === 4) set(4, this.simp(this.diff(A(0))), 'x');
+        if (j === 5) set(5, this.simp({ k: '*', a: A(3), b: A(4) }), 'x');
+      } catch (e) {}
+    }
+    const ans = Object.assign({}, this.state.ans); delete ans['mk-edit'];
+    this.setState({ mk: rows, mkEdit: null, mkErr: '', ans });
+  }
+
+  mistakeCard() {
+    const S = this.state, M = this.D.MK;
+    const rows = this.mkRows();
+    const editing = S.mkEdit;
+    const f6 = this.compile(rows[5].src, false).f;
+    const right = this.same(f6, this.cf(M.ans, false));
+    const f4 = this.compile(rows[3].src, false).f, f5 = this.compile(rows[4].src, false).f;
+    const consistent = this.same(f6, (x) => f4(x) * f5(x));
+    const r4ok = this.same(f4, this.cf(M.row4, false));
+    const green = right && consistent && r4ok;
+    const touched = !!S.mk;
+    let st;
+    if (green) st = 'Final answer: right. Row 4 was the mistake. Putting the inside back means replacing `{u}` with the inside, `{x^2 + 1}`; the student put in the inside’s derivative, `2x`, instead. So `f′(x) = 3(x^2 + 1)^2 · 2x = 6x(x^2 + 1)^2`.';
+    else if (right) st = 'Row 6 now shows the right answer, but it no longer follows from multiplying rows 4 and 5. Fix the row where the mistake starts, and let the rows below update from it.';
+    else st = touched ? 'Final answer: still wrong. Look for the first row that does not follow from the rows above it.' : 'Final answer: wrong. Find the row where the mistake starts, and fix it.';
+    return {
+      isFix: true,
+      title: this.rich('A student found the derivative of `f(x) = ' + M.f + '`. Their final answer is wrong. Find the row where the mistake starts and fix it.'),
+      rows: rows.map((r, k) => {
+        const isEd = editing === k;
+        const base = Object.assign(this.rowBase(k), {
+          id: isEd ? 'mk-edit' : '', editing: isEd, notEditing: !isEd,
+          show: this.rich(r.disp), boxCls: (k === 5 ? (green ? 'good' : 'bad') : '') + (editing != null && !isEd ? ' dim' : ''),
+          hasTag: !!r.tag, tag: r.tag || '', dis: editing != null,
+          fix: () => { const ans = Object.assign({}, this.state.ans); ans['mk-edit'] = r.src; this.caret['mk-edit'] = r.src.length; this.setState({ mkEdit: k, mkErr: '', ans, active: 'mk-edit' }); setTimeout(() => { const el = document.getElementById('mk-edit'); if (el) { try { el.focus(); } catch (e) {} } }, 0); }
+        });
+        if (isEd) {
+          Object.assign(base, {
+            aria: 'Edit row ' + (k + 1), keys: M.uv[k] ? this.PALU : this.PAL, showPal: S.active === 'mk-edit',
+            hasErr: !!S.mkErr, err: S.mkErr,
+            evaluate: () => this.mkEvaluate(k), cancel: () => { const ans = Object.assign({}, this.state.ans); delete ans['mk-edit']; this.setState({ mkEdit: null, mkErr: '', ans }); }
+          }, this.feedback('mk-edit', S.ans['mk-edit'] || '', M.uv[k]), this.io('mk-edit', () => this.mkEvaluate(k)));
+        }
+        return base;
+      }),
+      stCls: green ? 'st-ok' : 'st-bad', stMsg: this.rich(st),
+      canReset: touched && editing == null, reset: () => this.setState({ mk: null, mkEdit: null, mkErr: '' })
+    };
+  }
+
+  machineView() {
+    const x = this.state.mx;
+    const u = 3 * x + 1;
+    const X = String(x), U = String(u), Y = String(u * u);
+    return {
+      isMachine: true, x, u, y: Y,
+      big: this.rich('`f(x) = «(»{3x + 1}«)^2»`'),
+      steps: [
+        { arrow: false, cls: '', segs: this.rich('`f(‹' + X + '›) = «(»{3 · ‹' + X + '› + 1}«)^2»`') },
+        { arrow: true, cls: '', segs: this.rich('Let `{u = 3 · ‹' + X + '› + 1}`') },
+        { arrow: true, cls: '', segs: this.rich('`{u = ' + U + '}`') },
+        { arrow: true, cls: '', segs: this.rich('`f(‹' + X + '›) = {u}«^2» = {' + U + '}«^2»`') },
+        { arrow: true, cls: 'last', segs: this.rich('`f(‹' + X + '›) = ' + Y + '`') }
+      ],
+      u1: this.rich('The inside’s result gets a name, `{u}`. Then `f(x)` is just `{u}«^2»`, where `{u = 3x + 1}`.'),
+      opts: [0, 1, 2].map((v) => ({ v, on: v === x ? 'true' : 'false', cls: v === x ? 'on' : '', press: () => this.setState({ mx: v }) }))
+    };
+  }
+
+  hlView() {
+    const S = this.state, H = this.D.HL;
+    const i = Math.min(S.hlI || 0, H.length - 1);
+    const h = H[i];
+    const solved = !!S.hlSolved[i];
+    const w = S.hlWrong[i];
+    let nx = -1;
+    for (let k = 1; k <= H.length; k++) { const j = (i + k) % H.length; if (!S.hlSolved[j] && j !== i) { nx = j; break; } }
+    return {
+      isHL: true,
+      tabs: H.map((x, k) => ({ segs: this.rich('`' + x.show + '`'), cls: (k === i ? 'cur' : '') + (S.hlSolved[k] ? ' done' : ''), cur: k === i ? 'true' : 'false', aria: 'Function ' + (k + 1) + (S.hlSolved[k] ? ', done' : ''), go: () => this.setState({ hlI: k }) })),
+      count: (i + 1) + ' of ' + H.length,
+      formula: this.rich('`' + (solved ? h.disp : h.show) + '`'), formCls: solved ? 'solved' : '',
+      unsolved: !solved, solved,
+      choices: h.ch.map((c, k) => ({ segs: this.rich('`' + c + '`'), cls: w === k ? 'wrong' : '', pick: () => {
+        if (k === h.ok) { const hs = Object.assign({}, this.state.hlSolved); hs[i] = true; const hw = Object.assign({}, this.state.hlWrong); delete hw[i]; this.setState({ hlSolved: hs, hlWrong: hw }); }
+        else { const hw = Object.assign({}, this.state.hlWrong); hw[i] = k; this.setState({ hlWrong: hw }); }
+      } })),
+      hasWrong: !solved && w != null, wrong: this.rich(w != null ? (h.why[w] || '') : ''),
+      l1: this.rich('{Inside}: `{u = ' + h.inn + '}`'),
+      l2: this.rich('«Outside»: `«' + h.out + '»`'),
+      hasNote: !!h.note, note: this.rich(h.note || ''),
+      hasNext: solved && nx >= 0, next: () => { if (nx >= 0) this.setState({ hlI: nx }); },
+      allDone: H.every((_, k) => S.hlSolved[k])
+    };
+  }
+
+  examView() {
+    const S = this.state;
+    const T = ['I named the inside and the outside.', 'I multiplied by the inside’s derivative, 2x.', 'I simplified to a single term.'];
+    return {
+      isExam: true,
+      q: this.rich('Differentiate `f(x) = (x^2 − 4)^(3/2)` for `x > 2` and simplify to a single term. Show your work.'),
+      closed: !S.examOpen, isOpen: !!S.examOpen, open: () => this.setState({ examOpen: true }),
+      lines: [
+        'Inside `{u = x^2 − 4}`, outside `{u}«^(3/2)»`.',
+        'Differentiate the outside: `«(3/2)»{u}«^(1/2)»`. Put the inside back: `«(3/2)(»{x^2 − 4}«)^(1/2)»`.',
+        'Differentiate the inside: `{2x}`.',
+        'Multiply: `(3/2)(x^2 − 4)^(1/2) · 2x = 3x(x^2 − 4)^(1/2)`.',
+        'As a single term: `f′(x) = 3x√(x^2 − 4)`.'
+      ].map((t) => ({ segs: this.rich(t) })),
+      checks: T.map((t, k) => ({ text: t, on: !!S.checks[k], toggle: () => { const c = this.state.checks.slice(); c[k] = !c[k]; this.setState({ checks: c }); } })),
+      allChecked: S.checks.every(Boolean)
+    };
+  }
+
+  ruleItems(all) {
+    const S = this.state;
+    const genOn = all || !!(S.fillDone.fexp || S.fillDone.fln || S.done['in-d3a']);
+    const list = this.D.BASE.map((r) => ({ name: r[0], f: this.rich(r[1]), isNew: false, cls: '' }));
+    this.D.NEW.forEach((r) => { if (r[2] === 'chain' || genOn) list.push({ name: r[0], f: this.rich(r[1]), isNew: true, cls: 'new' }); });
+    return list;
+  }
+
+  renderVals() {
+    const D = this.D;
+    const R = (t) => this.rich(t);
+    const blocks = [];
+    const sec = (id, num, title, lede) => blocks.push({ isSec: true, id, num, hasNum: !!num, title, lede: R(lede || ''), hasLede: !!lede });
+    const prose = (paras, title) => blocks.push({ isProse: true, title: title || '', hasTitle: !!title, paras: paras.map((p) => ({ segs: R(p) })) });
+    const probs = (key, mode) => blocks.push({ isProbs: true, items: D.sets[key].map((it) => this.probView(it, mode, key)) });
+
+    sec('warm', '', 'Warm-up', 'Three derivatives from earlier units. Not graded.');
+    probs('warm', 'warm');
+
+    sec('m1', '1', 'Seeing the inside', 'Try this before any explanation.');
+    probs('try', 'try');
+    prose(['A *composite* is a function inside a function. The {inside} is the part you would compute first if you plugged in a number. The «outside» is what happens to it next.'], 'A function inside a function');
+    blocks.push(this.machineView());
+    prose(['For each function, split it into two functions and then pick the part you would compute first.'], 'Find the inside');
+    blocks.push(this.hlView());
+
+    sec('m2', '2', 'The rule', '');
+    blocks.push({
+      isRule: true,
+      eq: R('`(«f»({g(x)}))′ = «f′»({g(x)}) · {g′(x)}`'),
+      words: R('In words: the derivative of a composite function is the «outside’s derivative», evaluated at the {inside}, times the {inside’s derivative}.'),
+      uline: R('“Evaluated at the inside” means: call the inside `{u}`, differentiate the outside as if `{u}` were an ordinary variable, then put the inside back where `{u}` was. Rows 3 and 4 below show it.')
+    });
+    blocks.push(this.workedCard(D.WORKED[0]));
+    blocks.push(this.workedCard(D.WORKED[1]));
+    blocks.push({ isWhy: true });
+    blocks.push(this.fillCard(D.FILLS.sin));
+    blocks.push(this.workedCard(D.WORKED[2]));
+    blocks.push(this.fillCard(D.FILLS.exp));
+    blocks.push(this.mistakeCard());
+    prose([], 'On your own');
+    probs('do2', 'do');
+
+    sec('m3', '3', 'Harder examples', '');
+    prose(['Every rule you know for `x` works for any inside `{u}`. Each one gains a factor of `{u′}`:']);
+    blocks.push({ isForms: true, rows: D.FORMS.map((r) => ({ l: R(r[0]), r: R(r[1]) })) });
+    blocks.push(this.fillCard(D.FILLS.ln));
+    prose([], 'On your own');
+    probs('do3', 'do');
+
+    sec('exam', '', 'Exam rehearsal', '');
+    blocks.push(this.examView());
+
+    sec('close', '', 'What you have now', '');
+    blocks.push({ isClose: true, rules: this.ruleItems(true) });
+
+    const ruleList = this.ruleItems(false);
+    return {
+      blocks, ruleList, ruleCount: ruleList.length,
+      rulesOpen: !!this.state.rulesOpen, rulesOpenStr: this.state.rulesOpen ? 'true' : 'false',
+      toggleRules: () => this.setState({ rulesOpen: !this.state.rulesOpen }),
+      closeRules: () => this.setState({ rulesOpen: false })
+    };
+  }
+}
+
+dcMount(Component, {}, document.getElementById('dc-tpl'), document.getElementById('dc-app'));
+</script>
+
+<!-- ============================================================================
+     APPENDED BY HOSTING CLAUDE, 2026-10-07 -- health-check self-test only.
+     Not present in the source file (interactive-lessons/lesson/chain-rule.html),
+     which the Note-to-Claudes kit asks not to edit. This block is additive and
+     lives ONLY in this hosted copy, to satisfy the Rize interactive-health
+     contract (window.__selfCheck() -> {ok, checks}; see SELFCHECK.md in
+     swachtel-dev/rize-interactive-health). It reads the page's own rendered
+     DOM and drives its real input + button, then restores localStorage so it
+     leaves no trace on a student's saved progress.
+     ============================================================================ -->
+<script>
+(function () {
+  function byId(id) { return document.getElementById(id); }
+  function fire(el, type) { el.dispatchEvent(new Event(type, { bubbles: true })); }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  window.SelfCheck = window.SelfCheck || (function () {
+    var checks = [];
+    return {
+      register: function (name, fn) { checks.push({ name: name, fn: fn }); },
+      run: async function () {
+        var out = [];
+        for (var i = 0; i < checks.length; i++) {
+          var c = checks[i];
+          try {
+            var r = await c.fn();
+            if (r === true || r === undefined) out.push({ name: c.name, ok: true });
+            else if (r === false) out.push({ name: c.name, ok: false, detail: 'returned false' });
+            else out.push({ name: c.name, ok: !!r.ok, detail: r.detail });
+          } catch (e) {
+            out.push({ name: c.name, ok: false, detail: String((e && e.message) || e) });
+          }
+        }
+        return { ok: out.every(function (c) { return c.ok; }), checks: out };
+      }
+    };
+  })();
+  window.__selfCheck = function () { return window.SelfCheck.run(); };
+
+  // Text actually rendered for a student to read: body minus <script>,
+  // <style> and <template> source (a <script> tag's own text -- e.g. this
+  // very harness, or the dc-runtime.js comment describing {{...}} holes --
+  // is part of document.body.textContent and would otherwise read as a
+  // broken-interpolation false positive).
+  function visibleText() {
+    var clone = document.body.cloneNode(true);
+    var kill = clone.querySelectorAll('script, style, template');
+    for (var i = 0; i < kill.length; i++) kill[i].remove();
+    return clone.textContent || '';
+  }
+
+  // 1. The page's main sections mounted with real content (Preact rendered
+  //    the template rather than silently producing an empty shell). Each
+  //    sec() div is just a header marker (id + number + title), not a
+  //    container for that section's prose, so we check the title rendered,
+  //    not the div's full text length -- and separately check the exact
+  //    known problem count the page's own data builds (12).
+  SelfCheck.register('main sections rendered', function () {
+    var ids = ['warm', 'm1', 'm2', 'm3', 'exam', 'close'];
+    var missing = ids.filter(function (id) {
+      var el = byId(id);
+      var h2 = el && el.querySelector('h2');
+      return !h2 || !h2.textContent.trim();
+    });
+    if (missing.length) return { ok: false, detail: 'missing or titleless section(s): ' + missing.join(', ') };
+    var probCount = document.querySelectorAll('.prob').length;
+    if (probCount !== 12) return { ok: false, detail: 'expected 12 problem cards (3 warm-up, 1 try-first, 8 graded), got ' + probCount };
+    return true;
+  });
+
+  // 2. Math typeset without errors: the custom typesetter (not MathJax --
+  //    this page has no CDN dependency) actually produced <sup> exponents,
+  //    and no raw template syntax or NaN/undefined leaked into the
+  //    student-visible page.
+  SelfCheck.register('math typeset without errors', function () {
+    var p1 = byId('p-w1');
+    if (!p1) return { ok: false, detail: 'problem p-w1 (f(x) = x^4) not found' };
+    var sup = p1.querySelector('.pmath sup');
+    if (!sup || !sup.textContent.trim()) {
+      return { ok: false, detail: 'exponent in f(x) = x^4 did not typeset as a <sup>' };
+    }
+    var scope = visibleText();
+    if (scope.indexOf('{{') !== -1) {
+      return { ok: false, detail: 'unrendered template placeholder ({{...}}) leaked into the rendered page' };
+    }
+    if (/\bNaN\b|\bundefined\b/.test(scope)) {
+      return { ok: false, detail: 'NaN or undefined leaked into the rendered page' };
+    }
+    return true;
+  });
+
+  // 3. The answer checker evaluates a known key correctly, and a known-wrong
+  //    answer is not marked correct. Uses warm-up problem 1, f(x) = x^4,
+  //    f'(x) = 4x^3. Restores the input and localStorage afterward.
+  SelfCheck.register('answer checker grades a known key correctly', async function () {
+    var KEY = 'rize-chain-rule-lesson-v4';
+    var savedRaw = null;
+    try { savedRaw = window.localStorage.getItem(KEY); } catch (e) {}
+
+    var input = byId('in-w1');
+    if (!input) return { ok: false, detail: 'input#in-w1 not found' };
+    var savedVal = input.value;
+
+    function setVal(v) { var el = byId('in-w1'); el.value = v; fire(el, 'input'); }
+    function click() {
+      var art = byId('p-w1');
+      var btn = art && art.querySelector('.ansrow button.btn');
+      if (!btn) throw new Error('Check button for w1 not found');
+      fire(btn, 'click');
+    }
+    function fbClass() {
+      var art = byId('p-w1');
+      var fb = art && art.querySelector('.fb');
+      return fb ? fb.className : '';
+    }
+
+    try {
+      setVal('4x^3'); // correct derivative of x^4
+      click();
+      await wait(50);
+      var rightCls = fbClass();
+      var rightOk = /\bfb-ok\b/.test(rightCls);
+
+      setVal('x^3'); // deliberately wrong
+      click();
+      await wait(50);
+      var wrongCls = fbClass();
+      var wrongOk = !/\bfb-ok\b/.test(wrongCls);
+
+      if (!rightOk) return { ok: false, detail: 'correct answer 4x^3 was not marked right (feedback class: "' + rightCls + '")' };
+      if (!wrongOk) return { ok: false, detail: 'wrong answer x^3 was marked right (feedback class: "' + wrongCls + '")' };
+      return true;
+    } finally {
+      setVal(savedVal);
+      await wait(20);
+      try {
+        if (savedRaw === null) window.localStorage.removeItem(KEY);
+        else window.localStorage.setItem(KEY, savedRaw);
+      } catch (e) {}
+    }
+  });
+})();
+</script>
+</body>
+</html>
