@@ -6,7 +6,7 @@
 <title>The chain rule</title>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&amp;family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Edu+VIC+WA+NT+Beginner:wght@400..700&amp;family=STIX+Two+Text:ital,wght@0,400;0,500;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
-<script>try{if(localStorage.getItem('rize-calc1-mode')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
+<script>try{if(localStorage.getItem('rize-calc1-mode')!=='dark')document.documentElement.setAttribute('data-theme','light')}catch(e){document.documentElement.setAttribute('data-theme','light')}</script>
 <style>
 /* Refined theme ("A refined", the house design since 2026-10-25). Book typography (Libre Caslon Display for titles,
    Libre Caslon Text for prose, math and controls, STIX Two for operators, a teacher's hand for annotations), a calm
@@ -1981,7 +1981,7 @@ dcMount(Component, {}, document.getElementById('dc-tpl'), document.getElementByI
 </script>
 <script>
 (function(){var b=document.querySelector('.modebtn');function sync(){var l=document.documentElement.getAttribute('data-theme')==='light';if(b){b.setAttribute('aria-pressed',String(l));b.textContent=l?'Dark mode':'Light mode';}}
-sync();if(b)b.addEventListener('click',function(e){e.stopPropagation();var l=document.documentElement.getAttribute('data-theme')!=='light';if(l)document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');try{if(l)localStorage.setItem('rize-calc1-mode','light');else localStorage.removeItem('rize-calc1-mode');}catch(err){}sync();});})();
+sync();if(b)b.addEventListener('click',function(e){e.stopPropagation();var l=document.documentElement.getAttribute('data-theme')!=='light';if(l)document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');try{localStorage.setItem('rize-calc1-mode',l?'light':'dark');}catch(err){}sync();});})();
 </script>
 </body>
 </html>
