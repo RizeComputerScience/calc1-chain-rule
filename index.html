@@ -5,10 +5,232 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The chain rule</title>
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&amp;family=Source+Sans+3:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&amp;family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;family=Edu+VIC+WA+NT+Beginner:wght@400..700&amp;family=STIX+Two+Text:ital,wght@0,400;0,500;1,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<script>try{if(localStorage.getItem('rize-calc1-mode')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
 <style>
-:root{--bg:#F5F2EA;--surface:#FFFDF7;--ink:#1C1A16;--muted:#5A5549;--line:#DAD3C3;--soft:#ECE7DA;--inside:#1E58A3;--inside-tint:#E1EAF6;--outside:#A1430C;--outside-tint:#F6E5D6;--ok:#2B6838;--ok-tint:#E2F0E3;--k-tint:#EEDFB8;--k-line:#B8964A;--bad:#A3271B;--bad-tint:#F8E2DE;--focus:#1E58A3;--serif:'Newsreader','Iowan Old Style',Georgia,serif;--sans:'Source Sans 3','Segoe UI',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;}
-@media (prefers-color-scheme: dark){:root{--bg:#15140F;--surface:#1E1C18;--ink:#EDE8DC;--muted:#B3AC9D;--line:#3B372F;--soft:#27241E;--inside:#91B9F2;--inside-tint:#1B2840;--outside:#F2A56F;--outside-tint:#3A2617;--ok:#91CC9D;--ok-tint:#1C3020;--k-tint:#3B321C;--k-line:#9C8146;--bad:#F2958A;--bad-tint:#3D1C18;--focus:#91B9F2;}}
+/* Refined theme ("A refined", the house design since 2026-10-25). Book typography (Libre Caslon Display for titles,
+   Libre Caslon Text for prose, math and controls, STIX Two for operators, a teacher's hand for annotations), a calm
+   card-free page, worked math and live figures on a quiet board, feedback as a mark, a word and one line of help.
+   Role colors are the rize palette's (PALETTE.md); neutrals are paper and board. Dark is the default here because the
+   engine's toggle is; [data-theme="light"] is the student's choice. Rules for using it: STANDARDS.md, "The House Design".
+   The theme loads before base.css, so its rules that override base.css carry an html prefix. Tokens only below the
+   two token blocks; palette_check.py reads the first two blocks. */
+:root{color-scheme:dark;
+  --bg:#111920;--surface:#0D141A;--panel:#1A242D;--soft:#22303B;--line:#2B3946;--grid:#24323D;--line-strong:#6C7B8A;
+  --ink:#E8EDF1;--muted:#AEBDC5;--hand:#D3DCE4;--accent:#D3DCE4;--on-accent:#111920;--focus:#E8EDF1;
+  --inside:#3FA7FF;--inside-tint:#15304D;--outside:#FFA566;--outside-tint:#3D2717;--rate:#DC75B8;--rate-tint:#3E1F33;
+  --k-tint:#4C4307;--k-line:#FFE100;--ok:#7DD49A;--ok-tint:#173324;--bad:#FF8D84;--bad-tint:#42201E;--hint:#A8BCCE;--hint-tint:#1C2A36;
+  --s1:#4495EA;--s2:#E07227;--s3:#00AA95;--s4:#886ACF;--s5:#B5900A;--s6:#CD5394;
+  --display:'Libre Caslon Display','Libre Caslon Text',Georgia,serif;--serif:'Libre Caslon Text','Iowan Old Style',Georgia,serif;
+  --sans:'Libre Caslon Text','Iowan Old Style',Georgia,serif;--math:'Libre Caslon Text','STIX Two Text','Cambria Math',Georgia,serif;
+  --op:'STIX Two Text','Cambria Math',Georgia,serif;--anno:'Edu VIC WA NT Beginner','Segoe Print','Bradley Hand',cursive;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;}
+:root[data-theme="light"]{color-scheme:light;
+  --bg:#FAFBFC;--surface:#FFFFFF;--panel:#EDF1F4;--soft:#EFF2F5;--line:#D2D9E0;--grid:#DCE3E9;--line-strong:#728090;
+  --ink:#14202A;--muted:#5E6771;--hand:#253645;--accent:#253645;--on-accent:#FAFBFC;--focus:#14202A;
+  --inside:#0053BE;--inside-tint:#E3ECFB;--outside:#B14500;--outside-tint:#FAEADC;--rate:#8F1563;--rate-tint:#F8E4EF;
+  --k-tint:#FFE771;--k-line:#A78700;--ok:#1C7340;--ok-tint:#E0F2E5;--bad:#B1251D;--bad-tint:#FBE6E4;--hint:#3B5469;--hint-tint:#E4ECF3;
+  --s1:#1A63CE;--s2:#D86500;--s3:#009784;--s4:#6441A9;--s5:#A68300;--s6:#AE2C77;}
+
+/* ---------- type ---------- */
+html body{font-size:19px;line-height:1.65;font-variant-numeric:lining-nums;background:var(--bg)}
+html h1,html h2,html h3{font-weight:400;letter-spacing:-.01em;text-wrap:balance}
+html .mo{font-family:var(--op);font-weight:500}
+html .mv{padding-right:.04em}
+html .pr.in,html .pr.out{font-weight:400}
+html span.in,html .ml .in :is(.mn,.mv,.mf,.mo),html :is(.mn,.mv,.mf,.mo).in{text-decoration:none}
+html .rt{font-weight:inherit}
+html .k{background:linear-gradient(97deg,transparent .08em,var(--k-tint) .2em,var(--k-tint) calc(100% - .2em),transparent calc(100% - .08em));box-shadow:none;border-radius:.2em .35em .25em .3em;font-weight:inherit;padding:0 .16em}
+html a,html .link,html .fixlink{color:var(--ink);text-decoration:underline;text-decoration-color:var(--line-strong);text-decoration-thickness:1.5px;text-underline-offset:.22em;font-weight:inherit}
+html a:hover,html .link:hover,html .fixlink:hover{text-decoration-color:var(--ink);color:var(--ink)}
+html .link{font-family:var(--serif);font-size:17px}
+html .cap,html .kicker,html .tb-lab,html .gtag,html .etag,html .plabel,html .pk,html .vc-count,html .mt-count,html .cap2{font-family:var(--serif);font-weight:400;font-style:italic;letter-spacing:0;text-transform:none}
+html .muted,html .small-sans,html .note.small{font-family:var(--serif)}
+
+/* ---------- page: one reading column of about 680 px; annotated work reaches into the right margin when there is room ---------- */
+html .col{max-width:680px}
+html .prob,html .scard,html .exam{max-width:680px}
+html .bar{background:var(--bg);border-bottom:1px solid var(--line)}
+html .brand{font-family:var(--serif);font-style:italic;font-weight:400;font-size:17px;color:var(--muted)}
+html .toc{font-family:var(--serif);font-size:16px}
+html .modebtn,html .ink-tg{font-family:var(--serif);font-weight:400;font-size:15px;border-color:var(--line-strong)}
+html .hero{padding:72px 0 28px}
+html .kicker{font-size:17px;color:var(--muted);margin-bottom:22px}
+html .hero h1{font-family:var(--display);font-weight:400;font-size:clamp(52px,8.6vw,96px);line-height:.95;letter-spacing:-.012em;margin-bottom:22px}
+html .dek{font-style:italic;font-size:22px;line-height:1.4;color:var(--muted);max-width:28em}
+html .sec{padding-top:96px;margin-bottom:6px}
+html .sec-top{border-top:0;padding-top:0;gap:.45em}
+html .sec-n{font-family:var(--display);font-size:30px;line-height:1;color:var(--muted)}
+html .sec h2{font-size:clamp(32px,4.6vw,40px);line-height:1.1}
+html .lede{font-style:italic;font-size:19px}
+html .prose{margin-top:36px}
+html .prose h3{font-size:26px}
+html .ptext{font-size:20px;line-height:1.55}
+html .where p{font-size:20px;line-height:1.6}
+
+/* ---------- the board: worked math and live figures sit on it; nothing else gets a box ---------- */
+html .workbox,html .sbox.workbox{background:var(--panel);border:0;border-radius:8px;padding:16px 22px;color:var(--ink)}
+html .gv,html .pfig,html .gwrap,html .overview,html .partsfig{background:var(--panel);border:0;border-radius:8px;padding:16px;color:var(--ink)}
+html .gwrap > .gv{padding:0}
+html .gv svg text,html .pfig svg text,html .gwrap svg text,html .overview svg text,html .partsfig svg text{font-family:var(--serif);fill:var(--ink)}
+html .gv svg text.gv-lab:not(.n),html .pfig svg text:not(.n){font-style:italic}
+html .gv svg text.n,html .pfig svg text.n,html .gv svg text.num{font-family:var(--math);font-style:normal}
+html .gv svg text.num{fill:var(--muted)}
+html .gv svg text.gv-hand{font-family:var(--anno);font-style:normal;fill:var(--hand)}
+html .gv-read{font-family:var(--serif);font-size:18px}
+html .gv-cap,html .pfig figcaption{font-family:var(--serif);font-size:16px;color:var(--muted)}
+/* the step rail is the board for a worked example: a full-width band */
+html .steps{background:var(--panel);box-shadow:0 0 0 100vmax var(--panel);clip-path:inset(0 -100vmax);padding:40px 0 30px}
+html .ink-wrap{margin-top:44px}
+html .ink-wrap + *{margin-top:44px}
+html .ink-bar{max-width:680px}
+html .ink-host:not(.steps){background:var(--panel);box-shadow:0 0 0 100vmax var(--panel);clip-path:inset(0 -100vmax);padding:30px 0 34px}
+html .ink-host .disp{text-align:left;margin:0 0 14px}
+@media (min-width:1160px){html .col > .ink-wrap,html .scard > .ink-wrap,html .hero > .ink-wrap{width:calc(100% + min(360px, 50vw - 364px))}}
+html .hero .ink-host .disp{font-size:clamp(30px,4.8vw,46px)}
+
+/* ---------- the algebra system: in every display equation the inside group is one soft tile ---------- */
+html :is(.disp,.sbox,.rule-eq,.know-eq,.defn-eq,.notn-sym,.emb-math,.pmath,.sol,.mline,.st-title) .in:not(.mn,.mv,.mf,.mo,.ms){background:var(--inside-tint);border-radius:.22em;padding:.02em .18em .04em;box-shadow:inset 0 -.09em 0 var(--inside);margin:0 .03em;text-decoration:none;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+html :is(.disp,.sbox,.rule-eq,.know-eq,.defn-eq,.notn-sym,.emb-math,.pmath,.sol,.mline,.st-title) .in :is(.mn,.mv,.mf,.mo){text-decoration:none}
+html :is(.disp,.sbox,.rule-eq,.know-eq,.defn-eq,.notn-sym,.emb-math,.pmath,.sol,.mline,.st-title) .in .in{background:none;box-shadow:none;padding:0;margin:0}
+/* older pages (the chain rule page) mark each atom of a group, not the group: tile the run of atoms as one piece */
+html :is(.disp,.sbox,.rule-eq,.know-eq,.defn-eq,.notn-sym,.emb-math,.pmath,.sol,.mline,.st-title,.hl-formula,.cline,.mbig,.frow,.rf) :is(.mn,.mv,.mf,.mo).in{background:var(--inside-tint);box-shadow:inset 0 -.09em 0 var(--inside);text-decoration:none;padding-top:.02em;padding-bottom:.04em}
+html :is(.disp,.sbox,.rule-eq,.know-eq,.defn-eq,.notn-sym,.emb-math,.pmath,.sol,.mline,.st-title,.hl-formula,.cline,.mbig,.frow,.rf) :is(.mn,.mv,.mf,.mo).in:not(.in + .in){border-radius:.22em 0 0 .22em;padding-left:.16em}
+html :is(.disp,.sbox,.rule-eq,.know-eq,.defn-eq,.notn-sym,.emb-math,.pmath,.sol,.mline,.st-title,.hl-formula,.cline,.mbig,.frow,.rf) :is(.mn,.mv,.mf,.mo).in:not(:has(+ .in)){border-top-right-radius:.22em;border-bottom-right-radius:.22em;padding-right:.16em}
+html :is(.disp,.sbox,.rule-eq,.know-eq,.defn-eq,.notn-sym,.emb-math,.pmath,.sol,.mline,.st-title,.hl-formula,.cline,.mbig,.frow,.rf) .ms.in{text-decoration:none}
+html :is(.disp,.sbox,.rule-eq,.know-eq,.defn-eq,.notn-sym,.emb-math,.pmath,.sol,.mline,.st-title,.st-m) .fr > .fd{padding-top:.2em}
+html :is(.disp,.sbox,.rule-eq,.know-eq,.defn-eq,.notn-sym,.emb-math,.pmath,.sol,.mline,.st-title,.st-m) .fr > .fn{padding-bottom:.12em}
+html .st-key .in{background:var(--inside-tint);border-radius:.22em;padding:.02em .18em .04em;box-shadow:inset 0 -.09em 0 var(--inside);text-decoration:none}
+html .st-key .in :is(.mn,.mv,.mf,.mo){text-decoration:none}
+html .st-title{font-size:26px}
+html .st-say{font-size:18px}
+html .st-m{font-size:30px}
+html .st-box{border-color:var(--ink)}
+html .disp{font-size:clamp(26px,4.6vw,34px);text-align:left}
+
+/* ---------- activities on paper: no cards, a hairline between them ---------- */
+html .prob,html .scard,html .exam{background:transparent;border:0;border-top:1px solid var(--line);border-radius:0;padding:28px 0 4px;margin:48px auto 0}
+html .fb:empty{display:none}
+html .col > .scard:first-child,html .ink-wrap + .scard,html .sec + .col > :first-child > :is(.scard,.exam,.prob):first-child,html .sec + .col > :is(.scard,.exam,.prob):first-child{border-top:0;padding-top:0}
+html .ctitle{font-family:var(--serif);font-style:italic;font-weight:400;font-size:19px;color:var(--ink)}
+html .ctitle .mn,html .ctitle .mv,html .ctitle .mo,html .ctitle .pr{font-size:19px}
+html .is-locked{border-style:solid}
+html .lhs{font-size:22px}
+html .minput{background:var(--surface);border:1.5px solid var(--line-strong);border-radius:7px;min-height:52px;font-size:19px}
+html .minput:focus{border-color:var(--ink);box-shadow:0 0 0 3px var(--soft)}
+html .key{border-color:var(--line);background:var(--surface);border-radius:7px}
+html .btn{font-family:var(--serif);font-weight:700;font-size:17px;letter-spacing:.01em;background:var(--ink);border-color:var(--ink);color:var(--bg);border-radius:7px;min-height:52px;padding:0 22px}
+html .btn.sm{min-height:48px;padding:0 18px}
+html .btn:hover{opacity:1;background:var(--hand);border-color:var(--hand)}
+html .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line-strong)}
+html .pv{font-family:var(--serif)}
+html .srow.ok .minput{border-color:var(--ok);border-width:2px}
+/* older worked-example rows (.srow with .snum) take the rail: numbered circles on a line, the math unboxed */
+html .srows:has(> .srow > .snum){position:relative}
+html .srows:has(> .srow > .snum)::before{content:"";position:absolute;left:14px;top:30px;bottom:30px;width:1.5px;background:var(--line)}
+html .srow{border-top:0}
+html .snum{position:relative;z-index:1;display:inline-grid;place-items:center;width:30px;height:30px;padding:0;margin-top:12px;border-radius:50%;border:1.5px solid var(--line-strong);background:var(--bg);font-family:var(--serif);font-weight:400;color:var(--muted)}
+html .slabel{font-family:var(--serif);font-size:18px}
+html .srows .sbox:not(.good):not(.bad):not(.given):not(.workbox){background:transparent;border-color:transparent;font-size:clamp(22px,3.2vw,28px);padding-left:4px}
+html .sbox.given{background:transparent;border-color:var(--line-strong)}
+
+/* ---------- feedback: a mark, a word, one line of help; "not yet" on a neutral ground ---------- */
+html .fb{position:relative;font-family:var(--serif);font-size:18px;line-height:1.5;color:var(--ink);font-weight:400;background:var(--hint-tint);border-radius:6px;padding:12px 16px;margin-top:14px}
+html .fb-ok,html .fb-no{padding-left:50px}
+html .fb-ok{background:var(--ok-tint)}
+html .fb-ok::before,html .fb-no::before{content:'';position:absolute;left:14px;top:12px;width:26px;height:26px;margin:0;border-radius:0;vertical-align:0;-webkit-mask:var(--fb-icon) center/contain no-repeat;mask:var(--fb-icon) center/contain no-repeat}
+html .fb-ok::before{background:var(--ok);--fb-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill-rule='evenodd' d='M12 1a11 11 0 1 1 0 22a11 11 0 0 1 0-22zm-5.9 11.3l1.8-1.8 2.4 2.4 5.8-6.1 1.8 1.8-7.6 7.9z'/%3E%3C/svg%3E")}
+html .fb-no::before{background:var(--bad);--fb-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10.2'/%3E%3Cpath d='M8.4 9.6a4.2 4.2 0 1 1 1.2 5.6M8.2 6.6v3.2h3.2'/%3E%3C/svg%3E")}
+html .fb-err::before,html .fb-stuck::before{content:none}
+html .fb .fb-w{font-weight:700}
+html .fb-ok .fb-w{color:var(--ok)}
+html .fb-no .fb-w{color:var(--bad)}
+html .fb .mn,html .fb .mv,html .fb .mf,html .fb .mo{font-size:20px}
+html .fb .fixlink{display:inline-block;margin-top:2px}
+html .hintd{font-family:var(--serif);font-size:18px;background:var(--hint-tint);border-radius:6px;padding:10px 16px;margin:10px 0 14px}
+html .hintd p{font-size:18px;margin:4px 0}
+html .hintd summary{color:var(--hint)}
+html .sol{background:var(--panel);border-radius:8px}
+html .repair{background:var(--panel);border-radius:8px}
+html .status{font-family:var(--serif)}
+html .st-bad{background:var(--hint-tint)}
+
+/* ---------- choices, matchers, tables, sliders, toggles ---------- */
+html .choice,html .mt-i{font-family:var(--serif);font-size:19px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--surface)}
+html .choice:hover,html .mt-i:hover{border-color:var(--ink)}
+html .choice.picked-ok,html .mt-i.done{border-color:var(--ok);background:var(--ok-tint)}
+html .choice.picked-no,html .chip.wrong{border-color:var(--bad);border-style:dashed}
+html .mt-i.sel{border-color:var(--ink);box-shadow:0 0 0 3px var(--soft)}
+html .mt-how,html .vc-idea,html .why,html .tb-read,html .ck,html .self legend,html .locked{font-family:var(--serif)}
+html .vc-item::before{border-color:var(--line-strong);font-family:var(--serif);font-weight:400}
+html .avt{background:transparent;border:0;border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);border-radius:0;font-family:var(--serif)}
+html .avt caption{font-style:italic;font-weight:400;font-size:16px}
+html .avt thead th{font-weight:400;font-style:italic;font-size:15px}
+html .avt td.nv,html .tb td.nv{font-family:var(--math)}
+html .avt tr.near td{background:var(--panel)}
+html .tb th[scope="row"]{font-family:var(--serif);font-weight:400}
+html .sl-lab{font-family:var(--serif);font-weight:400;font-size:17px}
+html .sl-in{accent-color:var(--ink)}
+html .zb{font-family:var(--serif);font-weight:400;font-size:17px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--surface);min-height:46px;padding:0 18px}
+html .zb.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+html .shared-badge{font-family:var(--serif);font-weight:400;border-radius:6px}
+html .whyd{max-width:680px;background:transparent;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0;padding:4px 0}
+html .whyd summary{font-family:var(--serif);font-weight:400;font-size:19px}
+html code{background:var(--panel)}
+html .backpill{font-family:var(--serif);background:var(--ink);color:var(--bg)}
+
+/* ---------- the teaching frame, calm: rules and the board instead of boxes; chrome never takes a role color ---------- */
+html .know{background:transparent;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0;padding:26px 0 14px}
+html .know-name{text-align:left;font-size:30px}
+html .know-tag{justify-content:flex-start;margin:4px 0 4px}
+html .know-tag span{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:0;text-transform:none;font-size:16px;color:var(--muted);background:none;border:0;padding:0}
+html .know-list li::before{background:transparent;border:1.5px solid var(--line-strong);color:var(--muted);font-family:var(--serif);font-weight:400;line-height:29px}
+html .know-text{font-size:19px}
+html .know-eq,html .defn-eq,html .notn-sym,html .rule-eq{background:var(--panel);border-radius:8px}
+html .defn{background:transparent;border:0;border-left:3px solid var(--ink);border-radius:0;margin:44px 0}
+html .defn-head{background:transparent;border:0;padding:2px 0 6px 24px}
+html .defn-kind{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:0;text-transform:none;font-size:16px;color:var(--muted)}
+html .defn-term{font-weight:700;font-size:clamp(26px,4vw,30px)}
+html .defn-body{padding:6px 0 4px 24px}
+html .defn-words{font-size:20px}
+html .defn-not{background:var(--hint-tint);border-left:3px solid var(--line-strong);border-radius:0 6px 6px 0}
+html .defn-not .tb-lab{color:var(--muted)}
+html .notn{background:transparent;border:0;border-left:3px solid var(--line-strong);border-radius:0;padding:4px 0 6px 24px}
+html .notn-head{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:0;text-transform:none;font-size:16px}
+html .notn-piece,html .notn-part:nth-child(3n+2) .notn-piece,html .notn-part:nth-child(3n) .notn-piece{border:1.5px solid var(--line-strong);background:var(--surface);border-radius:6px}
+html .notn-ex{background:var(--panel);border-radius:8px}
+html .notn-ex-k{font-family:var(--serif);font-style:italic;font-weight:400}
+html .rule{background:var(--surface);border:1.5px solid var(--ink);border-radius:10px}
+html .rule-name{font-family:var(--display);font-weight:400}
+html .memo span{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:0;text-transform:none;font-size:16px;color:var(--muted);background:none;border:0;padding:0}
+html .memo span::after{display:none}
+html .emblem{background:var(--panel);border:0;border-radius:8px}
+html .machine{background:var(--panel);border:0;border-radius:8px}
+html .hl,html .forms{background:transparent;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:0}
+html .hl-tab.cur{background:transparent}
+html .chip,html .chip-s{border-color:var(--line-strong);border-radius:8px;background:var(--surface)}
+html .pk,html .pku{font-family:var(--serif)}
+html .emb-legend,html .leg{font-family:var(--serif)}
+html .closer .rules{background:transparent}
+
+@media (max-width:640px){
+html body{font-size:18px}
+html .hero{padding:44px 0 16px}
+html .sec{padding-top:72px}
+html .sec h2{font-size:30px}
+html .ptext,html .where p{font-size:19px}
+html .st-m{font-size:27px}
+html .st-title{font-size:21px}
+html .steps{padding:28px 0 20px}
+html .defn-head,html .defn-body{padding-left:16px}
+html .notn{padding-left:16px}
+html .fb-ok,html .fb-no{padding-left:46px}
+html .fb-ok::before,html .fb-no::before{left:12px;width:24px;height:24px}
+html .btn{font-size:16px}
+}
+.modebtn{margin-left:auto;font-family:var(--sans);font-size:15px;font-weight:600;color:var(--ink);background:transparent;border:1.5px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer;white-space:nowrap}
+.toc a{white-space:nowrap}
+
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:21px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:var(--inside);text-underline-offset:3px}a:hover{color:var(--ink)}
@@ -20,7 +242,7 @@ h1,h2,h3{font-family:var(--serif);font-weight:500;letter-spacing:-0.01em;margin:
 .cap{font-family:var(--sans);font-size:14px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
 .muted{color:var(--muted)}
 /* math typesetting: always inline flow, never flex items */
-.mn,.mv,.mf,.mo,.ms{font-family:var(--serif)}
+.mn,.mv,.mf,.mo,.ms{font-family:var(--math)}
 .mv{font-style:italic;padding-right:.05em}
 .mo{white-space:nowrap}
 .mo.eq{white-space:normal}
@@ -282,7 +504,7 @@ body{font-size:19px}
 <header class="bar">
 <div class="bar-in">
 <a class="brand" href="#top">The chain rule</a>
-<nav class="toc" aria-label="Sections"><a href="#warm">Warm-up</a><a href="#m1">The inside</a><a href="#m2">The rule</a><a href="#m3">Harder examples</a><a href="#exam">Rehearsal</a></nav>
+<nav class="toc" aria-label="Sections"><a href="#warm">Warm-up</a><a href="#m1">The inside</a><a href="#m2">The rule</a><a href="#m3">Harder examples</a><a href="#exam">Rehearsal</a></nav><button type="button" class="modebtn" data-act="mode" aria-pressed="false">Light mode</button>
 <sc-if value="{{rulesOpen}}" hint-placeholder-val="{{ false }}"><button type="button" class="scrim" aria-label="Close your rules" onClick="{{closeRules}}"></button></sc-if>
 <button type="button" class="rulesbtn" aria-expanded="{{rulesOpenStr}}" aria-controls="rules-panel" onClick="{{toggleRules}}">Your rules <span class="n">{{ruleCount}}</span></button>
 <sc-if value="{{rulesOpen}}" hint-placeholder-val="{{ false }}">
@@ -1751,6 +1973,10 @@ dcMount(Component, {}, document.getElementById('dc-tpl'), document.getElementByI
     }
   });
 })();
+</script>
+<script>
+(function(){var b=document.querySelector('.modebtn');function sync(){var l=document.documentElement.getAttribute('data-theme')==='light';if(b){b.setAttribute('aria-pressed',String(l));b.textContent=l?'Dark mode':'Light mode';}}
+sync();if(b)b.addEventListener('click',function(e){e.stopPropagation();var l=document.documentElement.getAttribute('data-theme')!=='light';if(l)document.documentElement.setAttribute('data-theme','light');else document.documentElement.removeAttribute('data-theme');try{if(l)localStorage.setItem('rize-calc1-mode','light');else localStorage.removeItem('rize-calc1-mode');}catch(err){}sync();});})();
 </script>
 </body>
 </html>
